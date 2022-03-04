@@ -9,7 +9,7 @@ type ContentHandler struct {
 	OutputPort      port.ContentOutputPort
 	Repository      port.ContentRepository
 	ContentContract port.ContentContract
-	Storage         port.ContentStorage
+	ContentStorage  port.ContentStorage
 	UserRepo        port.UserRepository
 }
 
@@ -18,7 +18,7 @@ func NewContentInputPort(outputPort port.ContentOutputPort, repository port.Cont
 		OutputPort:      outputPort,
 		Repository:      repository,
 		ContentContract: contract,
-		Storage:         storage,
+		ContentStorage:  storage,
 		UserRepo:        userRepo,
 	}
 }
@@ -43,6 +43,7 @@ func (c *ContentHandler) Upload(contentInput *entities.Content) (*entities.Recei
 		c.OutputPort.RenderError(err, 400)
 		return nil, err
 	}
+	con, err := c.ContentStorage.Create(contentInput)
 	c.OutputPort.Render(receipt, 201)
 	return receipt, nil
 }

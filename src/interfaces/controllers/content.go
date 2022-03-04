@@ -8,6 +8,7 @@ import (
 	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/gateways"
 	"sp/src/interfaces/presenters"
+	"sp/src/interfaces/storage"
 	"sp/src/usecases/interactor"
 	"sp/src/usecases/port"
 
@@ -46,11 +47,13 @@ func (cc *ContentController) Post(w http.ResponseWriter, r *http.Request) {
 	outputPort := presenters.NewContentOutputPort(w)
 	repository := gateways.NewContentRepository(cc.Conn)
 	contract := contracts.NewContentContracts()
+	storage := storage.NewContentStorage()
 	userRepo := gateways.NewUserRepository(cc.Conn)
 	inputPort := interactor.NewContentInputPort(
 		outputPort,
 		repository,
 		contract,
+		storage,
 		userRepo,
 	)
 	inputPort.Upload(content)
@@ -64,7 +67,8 @@ func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
 	repository := gateways.NewContentRepository(cc.Conn)
 	userRepo := gateways.NewUserRepository(cc.Conn)
 	contract := contracts.NewContentContracts()
-	inputPort := interactor.NewContentInputPort(outputPort, repository, contract, userRepo)
+	storage := storage.NewContentStorage()
+	inputPort := interactor.NewContentInputPort(outputPort, repository, contract, storage, userRepo)
 	inputPort.FindByID(id)
 }
 
