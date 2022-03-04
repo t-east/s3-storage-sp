@@ -10,28 +10,25 @@ import (
 func TestContentUpload(t *testing.T) {
 	outputPort := mocks.NewContentOutputPortMock()
 	repository := mocks.NewContentRepositoryMock()
-	crypt := mocks.NewContentCryptMock()
-	sp := mocks.NewContentSPMock()
 	contract := mocks.NewContentContractMock()
-	inputPort := interactor.NewContentInputPort(outputPort, repository, crypt, sp, contract)
+	inputPort := interactor.NewContentInputPort(outputPort, repository, contract)
 
-	contentInput := &entities.ContentInput{
+	contentInput := &entities.Content{
 		Content:     []byte{},
+		MetaData:    [][]byte{},
+		HashedData:  [][]byte{},
 		ContentName: "コンテンツ1",
+		SplitCount:  0,
 		Owner:       "オーナー1",
+		Id:          "12",
+		UserId:      "1",
 	}
 
 	receipt, err := inputPort.Upload(contentInput)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if receipt.Id != "7" {
-		t.Errorf("Content.Upload() should return entities.Content.Id = 7, but got = %s", receipt.Id)
-	}
-	if receipt.Owner != contentInput.Owner {
-		t.Errorf("Content.Upload() should return entities.Content.Owner = %s, but got = %s", contentInput.Owner, receipt.Owner)
-	}
-	if receipt.ContentName != contentInput.ContentName {
-		t.Errorf("Content.Upload() should return entities.Content.ContentName = %s, but got = %s", contentInput.ContentName, receipt.ContentName)
+	if receipt.Id != contentInput.Id {
+		t.Errorf("Content.Upload() should return entities.Receipt.Id = 7, but got = %s", receipt.Id)
 	}
 }

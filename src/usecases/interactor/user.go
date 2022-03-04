@@ -8,39 +8,36 @@ import (
 type UserHandler struct {
 	OutputPort port.UserOutputPort
 	Repository port.UserRepository
-	Crypt      port.UserCrypt
 }
 
 // NewUserInputPort はUserInputPortを取得します．
-func NewUserInputPort(outputPort port.UserOutputPort, repository port.UserRepository, crypt port.UserCrypt) port.UserInputPort {
+func NewUserInputPort(outputPort port.UserOutputPort, repository port.UserRepository) port.UserInputPort {
 	return &UserHandler{
 		OutputPort: outputPort,
 		Repository: repository,
-		Crypt:      crypt,
 	}
 }
 
 //* ユーザ登録
 func (uc *UserHandler) Create(user *entities.User) (*entities.User, error) {
-	//* 鍵生成
-	// TODO: ユーザ情報を確認する -> 登録済みなのに新しく鍵を生成したら色々狂う
-	key, err := uc.Crypt.KeyGen()
-	if err != nil {
-		uc.OutputPort.RenderError(err)
-		return nil, err
-	}
-	// TODO: バリデーションを付ける
-	user.PubKey = key.PubKey
-	user.PrivKey = key.PrivKey
-
+	// TODO データベースからユーザを検索．登録済みアドレスの場合ははじく
+	// found, err := uc.Repository.FindByAddress(user.Address)
+	// if err != nil {
+	// 	uc.OutputPort.RenderError(err)
+	// 	return nil, err
+	// }
+	// if found != nil {
+	// 	uc.OutputPort.RenderError(err)
+	// 	return nil, err
+	// }
 	//* データベースに保存
-	user, err = uc.Repository.Create(user)
+	created, err := uc.Repository.Create(user)
 	if err != nil {
 		uc.OutputPort.RenderError(err)
 		return nil, err
 	}
-	uc.OutputPort.Render(user, 201)
-	return user, nil
+	uc.OutputPort.Render(created, 201)
+	return created, nil
 }
 
 //* ユーザ情報を取得

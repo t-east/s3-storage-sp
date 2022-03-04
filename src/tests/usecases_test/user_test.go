@@ -10,8 +10,7 @@ import (
 func TestUserCreate(t *testing.T) {
 	outputPort := mocks.NewUserOutputPortMock()
 	repository := mocks.NewUserRepositoryMock()
-	crypt := mocks.NewUserCryptMock()
-	inputPort := interactor.NewUserInputPort(outputPort, repository, crypt)
+	inputPort := interactor.NewUserInputPort(outputPort, repository)
 
 	user := &entities.User{Address: "sdf", PubKey: "sdf", PrivKey: "sdf"}
 
@@ -36,8 +35,7 @@ func TestUserCreate(t *testing.T) {
 func TestUserFindByID(t *testing.T) {
 	outputPort := mocks.NewUserOutputPortMock()
 	repository := mocks.NewUserRepositoryMock()
-	crypt := mocks.NewUserCryptMock()
-	inputPort := interactor.NewUserInputPort(outputPort, repository, crypt)
+	inputPort := interactor.NewUserInputPort(outputPort, repository)
 
 	user := &entities.User{Address: "sdf", PubKey: "sdf", PrivKey: "sdf"}
 
@@ -46,7 +44,7 @@ func TestUserFindByID(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if found.ID != "7" {
+	if found.ID != id {
 		t.Errorf("User.Create() should return entities.User.ID = 7, but got = %s", found.ID)
 	}
 	if found.Address != user.Address {
