@@ -31,6 +31,15 @@ func (ur *userRepository) FindByID(id string) (*entities.User, error) {
 	return user, nil
 }
 
+func (ur *userRepository) FindByAddress(address string) (*entities.User, error) {
+	var user = &entities.User{}
+	err := ur.Conn.Where("address = ?", address).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func (ur *userRepository) Create(u *entities.User) (*entities.User, error) {
 	t := time.Now()
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)

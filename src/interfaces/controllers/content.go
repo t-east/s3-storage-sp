@@ -3,7 +3,12 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"sp/src/core"
 	"sp/src/domains/entities"
+	"sp/src/interfaces/contracts"
+	"sp/src/interfaces/gateways"
+	"sp/src/interfaces/presenters"
+	"sp/src/usecases/interactor"
 	"sp/src/usecases/port"
 
 	"gorm.io/gorm"
@@ -38,21 +43,28 @@ func (cc *ContentController) Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	outputPort := cc.OutputFactory(w)
-	repository := cc.RepoFactory(cc.Conn)
-	contract := cc.ContractFactory()
-	inputPort := cc.InputFactory(outputPort, repository, contract)
+	outputPort := presenters.NewContentOutputPort(w)
+	repository := gateways.NewContentRepository(cc.Conn)
+	contract := contracts.NewContentContracts()
+	userRepo := gateways.NewUserRepository(cc.Conn)
+	inputPort := interactor.NewContentInputPort(
+		outputPort,
+		repository,
+		contract,
+		userRepo,
+	)
 	inputPort.Upload(content)
 }
 
 func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
-	//  TODO: idの取得をちゃんとしたやつにする
-	id := "1"
-
-	outputPort := cc.OutputFactory(w)
-	repository := cc.RepoFactory(cc.Conn)
-	contract := cc.ContractFactory()
-	inputPort := cc.InputFactory(outputPort, repository, contract)
+	_, tail := core.ShiftPath(r.URL.Path)
+	_, tail = core.ShiftPath(tail)
+	id, _ := core.ShiftPath(tail)
+	outputPort := presenters.NewContentOutputPort(w)
+	repository := gateways.NewContentRepository(cc.Conn)
+	userRepo := gateways.NewUserRepository(cc.Conn)
+	contract := contracts.NewContentContracts()
+	inputPort := interactor.NewContentInputPort(outputPort, repository, contract, userRepo)
 	inputPort.FindByID(id)
 }
 

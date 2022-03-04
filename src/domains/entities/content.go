@@ -9,6 +9,7 @@ type Content struct {
 	Owner       string   `json:"owner"`
 	Id          string   `json:"id"`
 	UserId      string   `json:"user_id"`
+	ContentId   string   `json:"content_id"`
 }
 
 type Receipt struct {
@@ -16,6 +17,8 @@ type Receipt struct {
 	ContentLogId string `json:"content_log_id"`
 	ContentURL   string `json:"content_url"`
 	FileName     string `json:"name"`
+	UserId       string `json:"user_id"`
+	ContentId    string `json:"content_id"`
 }
 
 type ReceiptFromBC struct {
@@ -27,15 +30,6 @@ type ReceiptFromBC struct {
 
 func NewContent() *Content {
 	return &Content{}
-}
-
-type ContentInput struct {
-	MetaData   [][]byte `json:"meta_data"`
-	HashedData [][]byte `json:"hashed_data"`
-	FileName   string   `json:"name"`
-	SplitCount int      `json:"split_count"`
-	Owner      string   `json:"owner"`
-	ArtId      string   `json:"art_id"`
 }
 
 type ContentInStorage struct {

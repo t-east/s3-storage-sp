@@ -1,9 +1,12 @@
 package gateways
 
 import (
+	"math/rand"
 	"sp/src/domains/entities"
 	"sp/src/usecases/port"
+	"time"
 
+	"github.com/oklog/ulid"
 	"gorm.io/gorm"
 )
 
@@ -27,16 +30,28 @@ func NewContentRepository(conn *gorm.DB) port.ContentRepository {
 	}
 }
 
-func (ur *ContentRepository) Find(id string) (receipt *entities.Receipt, err error) {
-	ContentInDB, err := ur.ContentSQLHandler.Find(&receipt, id)
+func (ur *ContentRepository) Find(id string) (*entities.Receipt, error) {
+	var receipt = &entities.Receipt{}
+	receipt.Id = id
+	err := ur.Conn.First(&receipt).Error
 	if err != nil {
 		return nil, err
 	}
-	return ContentInDB, nil
+	return receipt, nil
 }
 
-func (ur *ContentRepository) Create(u *entities.Content) (receipt *entities.Receipt, err error) {
-	receipt, err = ur.ContentSQLHandler.Create(u)
+func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Receipt, err error) {
+	t := time.Now()
+	entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
+	id := ulid.MustNew(ulid.Timestamp(t), entropy).String()
+	receipt = &entities.Receipt{
+		Id:           id,
+		UserId:       c.UserId,
+		ContentLogId: c.Id,
+		ContentURL:   "localhost:4001/api/content/" + id,
+		FileName:     c.ContentName,
+	}
+	err = ur.Conn.Create(receipt).Error
 	if err != nil {
 		return nil, err
 	}

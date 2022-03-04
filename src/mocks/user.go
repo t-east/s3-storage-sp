@@ -38,6 +38,12 @@ func (m *userRepositoryMock) FindByID(id string) (*entities.User, error) {
 	return user, nil
 }
 
+func (m *userRepositoryMock) FindByAddress(address string) (*entities.User, error) {
+	user := &entities.User{ID: "7", Address: address, PubKey: "sdf", PrivKey: "sdf"}
+	return user, nil
+}
+
+
 func (m *userRepositoryMock) Update(user *entities.User) (*entities.User, error) {
 	updated := &entities.User{ID: "7", Address: user.Address, PubKey: user.PubKey, PrivKey: user.PrivKey}
 	return updated, nil

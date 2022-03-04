@@ -9,13 +9,15 @@ type ContentHandler struct {
 	OutputPort      port.ContentOutputPort
 	Repository      port.ContentRepository
 	ContentContract port.ContentContract
+	UserRepo        port.UserRepository
 }
 
-func NewContentInputPort(outputPort port.ContentOutputPort, repository port.ContentRepository, contract port.ContentContract) port.ContentInputPort {
+func NewContentInputPort(outputPort port.ContentOutputPort, repository port.ContentRepository, contract port.ContentContract, userRepo port.UserRepository) port.ContentInputPort {
 	return &ContentHandler{
 		OutputPort:      outputPort,
 		Repository:      repository,
 		ContentContract: contract,
+		UserRepo:        userRepo,
 	}
 }
 
@@ -27,6 +29,12 @@ func (c *ContentHandler) Upload(contentInput *entities.Content) (*entities.Recei
 		return nil, err
 	}
 
+	//* 登録済みユーザかを確認する．
+	_, err = c.UserRepo.FindByID(contentInput.UserId)
+	if err != nil {
+		c.OutputPort.RenderError(err, 400)
+		return nil, err
+	}
 	//* データベースに保存
 	receipt, err := c.Repository.Create(contentInput)
 	if err != nil {
@@ -45,5 +53,5 @@ func (c *ContentHandler) FindByID(id string) {
 		return
 	}
 
-	c.OutputPort.Render(receipt, 201)
+	c.OutputPort.Render(receipt, 200)
 }

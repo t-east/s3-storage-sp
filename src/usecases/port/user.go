@@ -18,4 +18,5 @@ type UserRepository interface {
 	Create(*entities.User) (*entities.User, error)
 	Update(*entities.User) (*entities.User, error)
 	FindByID(string) (*entities.User, error)
+	FindByAddress(string) (*entities.User, error)
 }
