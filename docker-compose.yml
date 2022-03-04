@@ -10,7 +10,7 @@ networks:
 
 services:
   app:
-    container_name: user
+    container_name: sp
     build: .
     tty: true
     command: sh
