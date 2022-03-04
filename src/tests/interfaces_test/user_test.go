@@ -11,8 +11,8 @@ func TestUserRepositoryCreate(t *testing.T) {
 	FakeRepo := mocks.NewUserRepositoryMock()
 	userInput := &entities.User{
 		Address: "sdf",
-		PubKey:  "sdf",
-		PrivKey: "sdf",
+		PubKey:  []byte("sdf"),
+		PrivKey: []byte("sdf"),
 	}
 	user, err := FakeRepo.Create(userInput)
 	if err != nil {

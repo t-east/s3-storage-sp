@@ -34,12 +34,12 @@ func (m *userRepositoryMock) Create(user *entities.User) (*entities.User, error)
 }
 
 func (m *userRepositoryMock) FindByID(id string) (*entities.User, error) {
-	user := &entities.User{ID: id, Address: "sdf", PubKey: "sdf", PrivKey: "sdf"}
+	user := &entities.User{ID: id, Address: "sdf", PubKey: []byte("sdf"), PrivKey: []byte("sdf")}
 	return user, nil
 }
 
 func (m *userRepositoryMock) FindByAddress(address string) (*entities.User, error) {
-	user := &entities.User{ID: "7", Address: address, PubKey: "sdf", PrivKey: "sdf"}
+	user := &entities.User{ID: "7", Address: address, PubKey: []byte("sdf"), PrivKey: []byte("sdf")}
 	return user, nil
 }
 
