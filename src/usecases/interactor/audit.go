@@ -9,7 +9,7 @@ type AuditHandler struct {
 	OutputPort      port.AuditOutputPort
 	AuditContract   port.AuditContract
 	AuditCrypt      port.AuditCrypt
-	ContentStorage    port.ContentStorage
+	ContentStorage  port.ContentStorage
 	AuditRepository port.AuditRepository
 }
 
@@ -72,9 +72,9 @@ func (ah *AuditHandler) Challen() (*entities.Proofs, error) {
 		}
 		proofs.DataList = append(proofs.DataList,
 			entities.Proof{
-				Myu:   updated.Myu,
-				Gamma: updated.Gamma,
-				ArtId: updated.ArtId,
+				Myu:       updated.Myu,
+				Gamma:     updated.Gamma,
+				ContentId: updated.ContentId,
 			},
 		)
 		proofs.Total += 1

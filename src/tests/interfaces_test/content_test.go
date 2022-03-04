@@ -2,6 +2,7 @@ package interfaces_test
 
 import (
 	"sp/src/domains/entities"
+	"sp/src/interfaces/storage"
 	"sp/src/mocks"
 	"testing"
 )
@@ -42,6 +43,26 @@ func TestContentContractRegister(t *testing.T) {
 		UserId:      "",
 	}
 	err := FakeContract.Register(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+// ブロックチェーン登録モックのテスト
+func TestContentStorageCreate(t *testing.T) {
+	cs := storage.NewContentStorage()
+	content := &entities.Content{
+		Content:     []byte{72, 73},
+		MetaData:    [][]byte{},
+		HashedData:  [][]byte{},
+		ContentName: "test1",
+		SplitCount:  0,
+		Owner:       "",
+		Id:          "sdfsdf",
+		UserId:      "",
+		ContentId:   "dfg",
+	}
+	_, err := cs.Create(content)
 	if err != nil {
 		t.Fatal(err)
 	}
