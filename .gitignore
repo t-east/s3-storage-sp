@@ -1,1 +1,4 @@
 src/.env
+
+# テスト用のDB
+src/tests/http_test/test.db
