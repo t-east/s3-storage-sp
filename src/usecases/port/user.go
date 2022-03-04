@@ -11,7 +11,7 @@ type UserInputPort interface {
 
 type UserOutputPort interface {
 	Render(*entities.User, int)
-	RenderError(error)
+	RenderError(error, int)
 }
 
 type UserRepository interface {

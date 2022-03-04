@@ -31,7 +31,7 @@ func (u *User) Render(user *entities.User, statusCode int) {
 	u.w.Write(res)
 }
 
-func (u *User) RenderError(err error) {
-	u.w.WriteHeader(http.StatusInternalServerError)
-	http.Error(u.w, err.Error(), http.StatusInternalServerError)
+func (u *User) RenderError(err error, code int) {
+	u.w.WriteHeader(code)
+	http.Error(u.w, err.Error(), code)
 }

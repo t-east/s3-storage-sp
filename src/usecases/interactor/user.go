@@ -33,7 +33,7 @@ func (uc *UserHandler) Create(user *entities.User) (*entities.User, error) {
 	//* データベースに保存
 	created, err := uc.Repository.Create(user)
 	if err != nil {
-		uc.OutputPort.RenderError(err)
+		uc.OutputPort.RenderError(err, 400)
 		return nil, err
 	}
 	uc.OutputPort.Render(created, 201)
@@ -44,7 +44,7 @@ func (uc *UserHandler) Create(user *entities.User) (*entities.User, error) {
 func (uc *UserHandler) FindByID(id string) (*entities.User, error) {
 	user, err := uc.Repository.FindByID(id)
 	if err != nil {
-		uc.OutputPort.RenderError(err)
+		uc.OutputPort.RenderError(err, 400)
 		return nil, err
 	}
 	uc.OutputPort.Render(user, 200)
