@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type SQLHandler interface {
+type UserSQLHandler interface {
 	Find(interface{}, ...interface{}) (*entities.User, error)
 	First(interface{}, ...interface{}) (*entities.User, error)
 	Create(interface{}) error
@@ -18,7 +18,7 @@ type SQLHandler interface {
 
 type userRepository struct {
 	Conn *gorm.DB
-	SQLHandler
+	UserSQLHandler
 }
 
 func NewUserRepository(conn *gorm.DB) port.UserRepository {
@@ -28,7 +28,7 @@ func NewUserRepository(conn *gorm.DB) port.UserRepository {
 }
 
 func (ur *userRepository) FindByID(id string) (user *entities.User, err error) {
-	userInDB, err := ur.SQLHandler.Find(&user, id)
+	userInDB, err := ur.UserSQLHandler.Find(&user, id)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (ur *userRepository) FindByID(id string) (user *entities.User, err error) {
 }
 
 func (ur *userRepository) Create(u *entities.User) (user *entities.User, err error) {
-	err = ur.SQLHandler.Create(u)
+	err = ur.UserSQLHandler.Create(u)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (ur *userRepository) Create(u *entities.User) (user *entities.User, err err
 }
 
 func (ur *userRepository) Update(u *entities.User) (user *entities.User, err error) {
-	err = ur.SQLHandler.Save(u)
+	err = ur.UserSQLHandler.Save(u)
 	if err != nil {
 		return nil, err
 	}

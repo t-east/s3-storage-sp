@@ -6,10 +6,10 @@ import (
 )
 
 type AuditHandler struct {
-	OutputPort    port.AuditOutputPort
-	AuditContract port.AuditContract
-	AuditCrypt    port.AuditCrypt
-	AuditStorage port.AuditStorage
+	OutputPort      port.AuditOutputPort
+	AuditContract   port.AuditContract
+	AuditCrypt      port.AuditCrypt
+	AuditStorage    port.AuditStorage
 	AuditRepository port.AuditRepository
 }
 
@@ -65,12 +65,18 @@ func (ah *AuditHandler) Challen() (*entities.Proofs, error) {
 			return nil, err
 		}
 		//* proofをデータベースに登録
-		updatedProofData, err := ah.AuditRepository.Update(proof)
+		updated, err := ah.AuditRepository.Update(proof)
 		if err != nil {
 			ah.OutputPort.Render(proofs, 400)
 			return nil, err
 		}
-		proofs.DataList = append(proofs.DataList, updatedProofData)
+		proofs.DataList = append(proofs.DataList,
+			entities.Proof{
+				Myu:   updated.Myu,
+				Gamma: updated.Gamma,
+				ArtId: updated.ArtId,
+			},
+		)
 		proofs.Total += 1
 	}
 	ah.OutputPort.Render(proofs, 200)

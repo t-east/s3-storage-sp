@@ -14,8 +14,8 @@ type AuditOutputPort interface {
 }
 
 type AuditRepository interface {
-	Create(proof *entities.Proof) (entities.Proof, error)
-	Update(proof *entities.Proof) (entities.Proof, error)
+	Create(proof *entities.Proof) (*entities.Proof, error)
+	Update(proof *entities.Proof) (*entities.Proof, error)
 }
 
 type AuditContract interface {
