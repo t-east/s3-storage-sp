@@ -46,5 +46,5 @@ func (m *userRepositoryMock) Update(user *entities.User) (*entities.User, error)
 func (m *userOutputPortMock) Render(*entities.User, int) {
 }
 
-func (m *userOutputPortMock) RenderError(error) {
+func (m *userOutputPortMock) RenderError(error, int) {
 }
