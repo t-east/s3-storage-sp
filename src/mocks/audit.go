@@ -52,18 +52,18 @@ type AuditContractMock struct {
 
 func (m *AuditRepositoryMock) Create(proof *entities.Proof) (*entities.Proof, error) {
 	created := &entities.Proof{
-		Myu:   []byte{},
-		Gamma: []byte{},
-		ArtId: "1",
+		Myu:       []byte{},
+		Gamma:     []byte{},
+		ContentId: "1",
 	}
 	return created, nil
 }
 
 func (m *AuditRepositoryMock) Update(proof *entities.Proof) (*entities.Proof, error) {
 	updated := &entities.Proof{
-		Myu:   []byte{},
-		Gamma: []byte{},
-		ArtId: "1",
+		Myu:       []byte{},
+		Gamma:     []byte{},
+		ContentId: "1",
 	}
 	return updated, nil
 }
@@ -80,19 +80,34 @@ func (m *AuditContractMock) RegisterProof(*entities.Proof) error {
 
 func (m *AuditContractMock) GetChallen(id string) (*entities.Chal, error) {
 	chal := &entities.Chal{
-		ArtId: id,
-		C:     0,
-		K1:    []byte{},
-		K2:    []byte{},
+		ContentId: id,
+		C:         0,
+		K1:        []byte{},
+		K2:        []byte{},
 	}
 	return chal, nil
 }
 
-func (m *AuditCryptMock) AuditProofGen(chal *entities.Chal, content *entities.Content) (*entities.Proof, error) {
+func (m *AuditCryptMock) AuditProofGen(chal *entities.Chal, content *entities.Content, contentLog *entities.Content) (*entities.Proof, error) {
 	proof := &entities.Proof{
-		Myu:   []byte{},
-		Gamma: []byte{},
-		ArtId: chal.ArtId,
+		Myu:       []byte{},
+		Gamma:     []byte{},
+		ContentId: chal.ContentId,
 	}
 	return proof, nil
+}
+
+func (m *AuditContractMock) GetContentLog(id string) (*entities.Content, error) {
+	content := &entities.Content{
+		Content:     []byte{},
+		MetaData:    [][]byte{},
+		HashedData:  [][]byte{},
+		ContentName: "",
+		SplitCount:  0,
+		Owner:       "",
+		Id:          id,
+		UserId:      id,
+		ContentId:   "sdf",
+	}
+	return content, nil
 }

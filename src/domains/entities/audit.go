@@ -6,15 +6,15 @@ type ArtLog struct {
 }
 
 type Chal struct {
-	ArtId string `json:"art_id"`
-	C     int    `json:"ck"`
-	K1    []byte `json:"k1"`
-	K2    []byte `json:"k2"`
+	ContentId string `json:"art_id"`
+	C         int    `json:"ck"`
+	K1        []byte `json:"k1"`
+	K2        []byte `json:"k2"`
 }
 
 type Proof struct {
-	Myu   []byte `json:"myu"`
-	Gamma []byte `json:"gamma"`
+	Myu       []byte `json:"myu"`
+	Gamma     []byte `json:"gamma"`
 	ContentId string `json:"content_id"`
 }
 
