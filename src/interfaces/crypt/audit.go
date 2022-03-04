@@ -83,7 +83,10 @@ func (pr *auditCrypt) AuditProofGen(
 	var myu *pbc.Element
 	var gamma *pbc.Element
 	pairing, _ := pbc.NewPairingFromString(pr.Param.Paring)
-	splitedFile, _ := splitSlice(content.Content, content.SplitCount)
+	splitedFile, err := splitSlice(content.Content, content.SplitCount)
+	if err != nil {
+		return nil, err
+	}
 	aTable, vTable := hashChallen(contentLog.SplitCount, int(chal.C), chal.K1, chal.K2, pairing)
 
 	var MSum *pbc.Element
