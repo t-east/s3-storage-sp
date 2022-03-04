@@ -3,12 +3,14 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"sp/src/asserts"
 	"sp/src/domains/entities"
 	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/controllers"
+	"sp/src/interfaces/gateways"
 	"testing"
 
 	"gorm.io/driver/sqlite"
@@ -37,7 +39,6 @@ func TestCreateUser(t *testing.T) {
 	}
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(&entities.User{
-		ID:      "1",
 		Address: "sdf",
 		PubKey:  "pubKey",
 		PrivKey: "privKey",
@@ -49,4 +50,55 @@ func TestCreateUser(t *testing.T) {
 	uc := controllers.LoadUserController(db)
 	uc.Dispatch(rec, req)
 	asserts.AssertEqual(t, http.StatusCreated, rec.Code, rec.Result().Status)
+}
+
+func TestGetUser(t *testing.T) {
+	db, err := LoadTestDB()
+	if err != nil {
+		t.Errorf("Failed to get DB: %v", err)
+		return
+	}
+
+	ur := gateways.NewUserRepository(db)
+	u := &entities.User{
+		Address: "sdf",
+		PubKey:  "pubKey",
+		PrivKey: "privKey",
+	}
+	user, err := ur.Create(u)
+	if err != nil {
+		t.Errorf("Can't create user: %v", err)
+		return
+	}
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/users/%s", user.ID), nil)
+	rec := httptest.NewRecorder()
+	uc := controllers.LoadUserController(db)
+	uc.Dispatch(rec, req)
+	asserts.AssertEqual(t, http.StatusOK, rec.Code, rec.Result().Status)
+}
+
+
+func TestGetUserError(t *testing.T) {
+	db, err := LoadTestDB()
+	if err != nil {
+		t.Errorf("Failed to get DB: %v", err)
+		return
+	}
+
+	ur := gateways.NewUserRepository(db)
+	u := &entities.User{
+		Address: "sdf",
+		PubKey:  "pubKey",
+		PrivKey: "privKey",
+	}
+	_, err = ur.Create(u)
+	if err != nil {
+		t.Errorf("Can't create user: %v", err)
+		return
+	}
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/users/%s", "sdsdfsdfsdfsfd"), nil)
+	rec := httptest.NewRecorder()
+	uc := controllers.LoadUserController(db)
+	uc.Dispatch(rec, req)
+	asserts.AssertEqual(t, http.StatusBadRequest, rec.Code, rec.Result().Status)
 }
