@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"sp/src/domains/entities"
-	"sp/src/interfaces/contracts"
 	"sp/src/usecases/port"
 
 	"gorm.io/gorm"
@@ -28,7 +27,7 @@ type ContentController struct {
 	Conn *gorm.DB
 }
 
-func LoadContentController(db *gorm.DB, param contracts.Param) *ContentController {
+func LoadContentController(db *gorm.DB) *ContentController {
 	return &ContentController{Conn: db}
 }
 
