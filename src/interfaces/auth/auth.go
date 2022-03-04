@@ -2,7 +2,6 @@ package auth
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
@@ -18,7 +17,6 @@ type responseToken struct {
 	AccessToken string `json:"access_token"`
 }
 
-
 type AuthHandler struct {
 }
 
@@ -33,17 +31,17 @@ func (ah *AuthHandler) Post(w http.ResponseWriter, r *http.Request) {
 	// TODO: パスワード間違ってても処理が通る。。。
 	// $ curl -X POST -H "Content-Type: application/json" -d '{"email":"a@example.com", "password":"test"}' localhost:8080/auth
 	// {"access_token":"eyJhbG..."}
-	bodyBytes, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
-	}
-	body := RequestAuth{}
-	if err = json.Unmarshal(bodyBytes, &body); err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
-	}
+	// bodyBytes, err := ioutil.ReadAll(r.Body)
+	// defer r.Body.Close()
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+	// 	return
+	// }
+	// body := RequestAuth{}
+	// if err = json.Unmarshal(bodyBytes, &body); err != nil {
+	// 	http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+	// 	return
+	// }
 	// TODO ユーザ呼び出し
 	// foundUser, err2 := ah.userUsecase.FindByEmail(body.Email)
 	// if err2 != nil {
