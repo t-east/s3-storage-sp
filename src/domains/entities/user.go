@@ -6,3 +6,8 @@ type User struct {
 	PubKey  string `json:"pub_key"`
 	PrivKey string `json:"priv_key"`
 }
+
+type UserRequest struct {
+	Address  string `json:"address"`
+	Password string `json:"password"`
+}

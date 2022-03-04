@@ -5,7 +5,10 @@ go 1.16
 require (
 	9fans.net/go v0.0.4 // indirect
 	github.com/Nik-U/pbc v0.0.0-20181205041846-3e516ca0c5d6 // indirect
+	github.com/auth0/go-jwt-middleware v1.0.1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/ethereum/go-ethereum v1.10.9 // indirect
+	github.com/form3tech-oss/jwt-go v3.2.5+incompatible
 	github.com/gin-gonic/gin v1.7.4 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0

@@ -3,21 +3,46 @@ package router
 import (
 	// "database/sql"
 	// "fmt"
+	"fmt"
 	"log"
 	"net/http"
+	"path"
+	"strings"
 
 	// "os"
 
 	// blank import for MySQL driver
 	eth "sp/src/drivers/ethereum"
 	rdb "sp/src/drivers/rdb"
+	auth "sp/src/interfaces/auth"
 	"sp/src/interfaces/controllers"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
+func shiftPath(p string) (head string, tail string) {
+	p = path.Clean("/" + p)
+	i := strings.Index(p[1:], "/") + 1
+	if i <= 0 {
+		return p[1:], "/"
+	}
+	return p[1:i], p[i:]
+}
+
+func ServerHandlerPublic(w http.ResponseWriter, r *http.Request) {
+	authHandler := auth.NewAuthHandler()
+	var head string
+	head, r.URL.Path = shiftPath(r.URL.Path)
+	switch head {
+	case "auth":
+		authHandler.Dispatch(w, r)
+	default:
+		http.Error(w, fmt.Sprintf("method not allowed request. req: %v", r.URL), http.StatusNotFound)
+	}
+}
+
 // Serve はserverを起動させます．
-func Serve(addr string) {
+func Serve() {
 	// データベース情報を取得
 	db, err := rdb.NewSQLHandler()
 	if err != nil {
@@ -49,7 +74,10 @@ func Serve(addr string) {
 		}
 	})
 
-	err = http.ListenAndServe(addr, nil)
+	sm := http.NewServeMux()
+	sm.Handle("/api/", auth.JwtMiddleware.Handler(private))
+	sm.Handle("/auth/", http.HandlerFunc(ServerHandlerPublic))
+	err = http.ListenAndServe(":8080", sm)
 	if err != nil {
 		log.Fatalf("Listen and serve failed. %+v", err)
 	}
