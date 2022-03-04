@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"sp/src/core"
 	"sp/src/domains/entities"
