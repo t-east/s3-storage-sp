@@ -10,7 +10,7 @@ type AuditInputPort interface {
 
 type AuditOutputPort interface {
 	Render(*entities.Proofs, int)
-	RenderError(error)
+	RenderError(error, int)
 }
 
 type AuditRepository interface {

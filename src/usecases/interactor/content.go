@@ -23,14 +23,14 @@ func (c *ContentHandler) Upload(contentInput *entities.Content) (*entities.Recei
 	//* ブロックチェーンに登録
 	err := c.ContentContract.Register(contentInput)
 	if err != nil {
-		c.OutputPort.RenderError(err)
+		c.OutputPort.RenderError(err, 500)
 		return nil, err
 	}
 
 	//* データベースに保存
 	receipt, err := c.Repository.Create(contentInput)
 	if err != nil {
-		c.OutputPort.RenderError(err)
+		c.OutputPort.RenderError(err, 400)
 		return nil, err
 	}
 	c.OutputPort.Render(receipt, 201)
@@ -41,7 +41,7 @@ func (c *ContentHandler) FindByID(id string) {
 	//* content情報を取得
 	receipt, err := c.Repository.Find(id)
 	if err != nil {
-		c.OutputPort.RenderError(err)
+		c.OutputPort.RenderError(err, 400)
 		return
 	}
 

@@ -71,7 +71,7 @@ func (m *AuditRepositoryMock) Update(proof *entities.Proof) (*entities.Proof, er
 func (m *AuditOutputPortMock) Render(*entities.Proofs, int) {
 }
 
-func (m *AuditOutputPortMock) RenderError(error) {
+func (m *AuditOutputPortMock) RenderError(error, int) {
 }
 
 func (m *AuditContractMock) RegisterProof(*entities.Proof) error {

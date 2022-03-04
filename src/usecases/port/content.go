@@ -11,7 +11,7 @@ type ContentInputPort interface {
 
 type ContentOutputPort interface {
 	Render(*entities.Receipt, int)
-	RenderError(error)
+	RenderError(error, int)
 }
 
 type ContentRepository interface {

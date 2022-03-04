@@ -62,7 +62,7 @@ func (m *ContentRepositoryMock) Find(id string) (*entities.Receipt, error) {
 func (m *ContentOutputPortMock) Render(*entities.Receipt, int) {
 }
 
-func (m *ContentOutputPortMock) RenderError(error) {
+func (m *ContentOutputPortMock) RenderError(error, int) {
 }
 
 func (m *ContentContractMock) Register(*entities.Content) error {
