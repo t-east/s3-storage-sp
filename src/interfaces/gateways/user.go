@@ -1,13 +1,9 @@
 package gateways
 
 import (
-	"log"
-	"math/rand"
 	"sp/src/domains/entities"
 	"sp/src/usecases/port"
-	"time"
 
-	"github.com/oklog/ulid"
 	"gorm.io/gorm"
 )
 
@@ -41,10 +37,6 @@ func (ur *userRepository) FindByAddress(address string) (*entities.User, error) 
 }
 
 func (ur *userRepository) Create(u *entities.User) (*entities.User, error) {
-	t := time.Now()
-	entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
-	u.ID = ulid.MustNew(ulid.Timestamp(t), entropy).String()
-	log.Print(u)
 	err := ur.Conn.Create(u).Error
 	if err != nil {
 		return nil, err

@@ -1,12 +1,9 @@
 package gateways
 
 import (
-	"math/rand"
 	"sp/src/domains/entities"
 	"sp/src/usecases/port"
-	"time"
 
-	"github.com/oklog/ulid"
 	"gorm.io/gorm"
 )
 
@@ -41,14 +38,11 @@ func (ur *ContentRepository) Find(id string) (*entities.Receipt, error) {
 }
 
 func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Receipt, err error) {
-	t := time.Now()
-	entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
-	id := ulid.MustNew(ulid.Timestamp(t), entropy).String()
 	receipt = &entities.Receipt{
-		Id:           id,
+		Id:           c.Id,
 		UserId:       c.UserId,
 		ContentLogId: c.Id,
-		ContentURL:   "localhost:4001/api/content/" + id,
+		ContentURL:   "localhost:4001/api/content/" + c.Id,
 		FileName:     c.ContentName,
 	}
 	err = ur.Conn.Create(receipt).Error
