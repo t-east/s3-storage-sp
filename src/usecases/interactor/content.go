@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"sp/src/core"
 	entities "sp/src/domains/entities"
 	port "sp/src/usecases/port"
 )
@@ -30,9 +31,16 @@ func (c *ContentHandler) Upload(contentInput *entities.Content) (*entities.Recei
 		c.OutputPort.RenderError(err, 500)
 		return nil, err
 	}
-
 	//* 登録済みユーザかを確認する．
 	_, err = c.UserRepo.FindByID(contentInput.UserId)
+	if err != nil {
+		c.OutputPort.RenderError(err, 400)
+		return nil, err
+	}
+	//* ulidを作成
+	contentInput.Id = core.MakeULID()
+	//* コンテンツをストレージに保存
+	_, err = c.ContentStorage.Create(contentInput)
 	if err != nil {
 		c.OutputPort.RenderError(err, 400)
 		return nil, err
@@ -43,7 +51,6 @@ func (c *ContentHandler) Upload(contentInput *entities.Content) (*entities.Recei
 		c.OutputPort.RenderError(err, 400)
 		return nil, err
 	}
-	con, err := c.ContentStorage.Create(contentInput)
 	c.OutputPort.Render(receipt, 201)
 	return receipt, nil
 }

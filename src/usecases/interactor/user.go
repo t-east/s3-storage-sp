@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"sp/src/core"
 	entities "sp/src/domains/entities"
 	port "sp/src/usecases/port"
 )
@@ -30,6 +31,7 @@ func (uc *UserHandler) Create(user *entities.User) (*entities.User, error) {
 		uc.OutputPort.RenderError(err, 400)
 		return nil, err
 	}
+	user.ID = core.MakeULID()
 	//* データベースに保存
 	created, err := uc.Repository.Create(user)
 	if err != nil {
