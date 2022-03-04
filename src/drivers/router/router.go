@@ -20,13 +20,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func shiftPath(p string) (head string, tail string) {
-	p = path.Clean("/" + p)
-	i := strings.Index(p[1:], "/") + 1
-	if i <= 0 {
-		return p[1:], "/"
+func LoadTestDB() (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		return nil, err
 	}
-	return p[1:i], p[i:]
+	db.AutoMigrate(&entities.User{})
+	return db, nil
 }
 
 func ServerHandlerPublic(w http.ResponseWriter, r *http.Request) {
