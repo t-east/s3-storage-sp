@@ -56,3 +56,14 @@ func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
 	inputPort := cc.InputFactory(outputPort, repository, contract)
 	inputPort.FindByID(id)
 }
+
+func (cc *ContentController) Dispatch(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		cc.Post(w, r)
+	case "GET":
+		cc.Get(w, r)
+	default:
+		http.NotFound(w, r)
+	}
+}

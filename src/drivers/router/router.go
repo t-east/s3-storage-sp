@@ -30,10 +30,24 @@ func Serve(addr string) {
 		log.Fatalf("Can't get Param from BC. %+v", err)
 	}
 
-	// コントローラの準備
-	_ = controllers.LoadUserController(db)
-	_ = controllers.LoadContentController(db, param)
-	_ = controllers.LoadAuditController(db, param)
+	private := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var head string
+		_, r.URL.Path = shiftPath(r.URL.Path)
+		head, r.URL.Path = shiftPath(r.URL.Path)
+		switch head {
+		case "users":
+			uc := controllers.LoadUserController(db)
+			uc.Dispatch(w, r)
+		case "content":
+			cc := controllers.LoadContentController(db, param)
+			cc.Dispatch(w, r)
+		case "audit":
+			ac := controllers.LoadAuditController(db, param)
+			ac.Dispatch(w, r)
+		default:
+			http.Error(w, fmt.Sprintf("method not allowed request. req: %v", r.URL), http.StatusNotFound)
+		}
+	})
 
 	err = http.ListenAndServe(addr, nil)
 	if err != nil {

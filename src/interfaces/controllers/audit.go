@@ -40,3 +40,13 @@ func (cc *AuditController) Post(w http.ResponseWriter, r *http.Request) {
 	inputPort := cc.InputFactory(outputPort, repository, contract, crypt)
 	inputPort.Challen()
 }
+
+
+func (ac *AuditController) Dispatch(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		ac.Post(w, r)
+	default:
+		http.NotFound(w, r)
+	}
+}

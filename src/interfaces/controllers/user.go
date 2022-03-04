@@ -48,3 +48,14 @@ func (uc *UserController) Get(w http.ResponseWriter, r *http.Request) {
 	inputPort := uc.InputFactory(outputPort, repository)
 	inputPort.FindByID(id)
 }
+
+func (uc *UserController) Dispatch(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		uc.Post(w, r)
+	case "GET":
+		uc.Get(w, r)
+	default:
+		http.NotFound(w, r)
+	}
+}

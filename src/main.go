@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
 
 	router "sp/src/drivers/router"
 
@@ -17,5 +15,5 @@ func main() {
 	}
 
 	log.Println("Server running...")
-	router.Serve(fmt.Sprintf(":%s", os.Getenv("PORT")))
+	router.Serve()
 }
