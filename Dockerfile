@@ -20,5 +20,7 @@ RUN set -ex \
     && make install \
     && rm -rf /usr/src/pbc
 COPY ./go.mod ./go.sum ./
-RUN go mod download
+RUN go mod download \
+    # TODO: これらのモジュールは開発用なので本番ではインストールしない
+    && go get -u github.com/cosmtrek/air
 EXPOSE 4000
