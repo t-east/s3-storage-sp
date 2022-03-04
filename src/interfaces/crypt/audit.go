@@ -1,4 +1,4 @@
-package gateways
+package crypt
 
 import (
 	"sp/src/domains/entities"
@@ -7,10 +7,10 @@ import (
 )
 
 type auditCrypt struct {
-	Param contracts.Param
+	Param *contracts.Param
 }
 
-func NewAuditCrypt(param contracts.Param) port.AuditCrypt {
+func NewAuditCrypt(param *contracts.Param) port.AuditCrypt {
 	return &auditCrypt{
 		Param: param,
 	}

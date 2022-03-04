@@ -3,6 +3,10 @@ package controllers
 import (
 	"net/http"
 	"sp/src/interfaces/contracts"
+	"sp/src/interfaces/crypt"
+	"sp/src/interfaces/gateways"
+	"sp/src/interfaces/presenters"
+	"sp/src/usecases/interactor"
 	"sp/src/usecases/port"
 
 	"gorm.io/gorm"
@@ -32,15 +36,14 @@ func LoadAuditController(db *gorm.DB, param *contracts.Param) *AuditController {
 	return &AuditController{Conn: db, Param: param}
 }
 
-func (cc *AuditController) Post(w http.ResponseWriter, r *http.Request) {
-	outputPort := cc.OutputFactory(w)
-	repository := cc.RepoFactory(cc.Conn)
-	contract := cc.ContractFactory()
-	crypt := cc.CryptFactory(cc.Param)
-	inputPort := cc.InputFactory(outputPort, repository, contract, crypt)
+func (ac *AuditController) Post(w http.ResponseWriter, r *http.Request) {
+	outputPort := presenters.NewAuditOutputPort(w)
+	repository := gateways.NewProofRepository(ac.Conn)
+	contract := contracts.NewAuditContracts()
+	crypt := crypt.NewAuditCrypt(ac.Param)
+	inputPort := interactor.NewAuditInputPort(outputPort, contract, crypt, repository)
 	inputPort.Challen()
 }
-
 
 func (ac *AuditController) Dispatch(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
