@@ -23,8 +23,8 @@ func TestCreateUser(t *testing.T) {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(&entities.User{
 		Address: "sdf",
-		PubKey:  "pubKey",
-		PrivKey: "privKey",
+		PubKey:  []byte("pubKey"),
+		PrivKey: []byte("privKey"),
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -45,8 +45,8 @@ func TestGetUser(t *testing.T) {
 	ur := gateways.NewUserRepository(db)
 	u := &entities.User{
 		Address: "sdf",
-		PubKey:  "pubKey",
-		PrivKey: "privKey",
+		PubKey:  []byte("pubKey"),
+		PrivKey: []byte("privKey"),
 	}
 	user, err := ur.Create(u)
 	if err != nil {
@@ -71,8 +71,8 @@ func TestGetUserError(t *testing.T) {
 	ur := gateways.NewUserRepository(db)
 	u := &entities.User{
 		Address: "sdf",
-		PubKey:  "pubKey",
-		PrivKey: "privKey",
+		PubKey:  []byte("pubKey"),
+		PrivKey: []byte("privKey"),
 	}
 	_, err = ur.Create(u)
 	if err != nil {

@@ -23,13 +23,13 @@ func TestCreateContent(t *testing.T) {
 	ur := gateways.NewUserRepository(db)
 	u := &entities.User{
 		Address: "sdf",
-		PubKey:  "pubKey",
-		PrivKey: "privKey",
+		PubKey:  []byte("pubKey"),
+		PrivKey: []byte("privKey"),
 	}
 	user, _ := ur.Create(u)
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(&entities.Content{
-		Content:     []byte{},
+		Content:     []byte{1,2,3,4,5},
 		MetaData:    [][]byte{},
 		HashedData:  [][]byte{},
 		ContentName: "コンテンツ1",
@@ -59,8 +59,8 @@ func TestGetContent(t *testing.T) {
 	ur := gateways.NewUserRepository(db)
 	u := &entities.User{
 		Address: "sdf",
-		PubKey:  "pubKey",
-		PrivKey: "privKey",
+		PubKey: []byte("pubKey"),
+		PrivKey: []byte("privKey"),
 	}
 	user, err := ur.Create(u)
 	if err != nil {
