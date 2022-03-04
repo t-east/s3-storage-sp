@@ -1,4 +1,4 @@
-package main
+package http
 
 import (
 	"bytes"
@@ -8,30 +8,13 @@ import (
 	"net/http/httptest"
 	"sp/src/asserts"
 	"sp/src/domains/entities"
-	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/controllers"
 	"sp/src/interfaces/gateways"
 	"testing"
-
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
-func LoadTestDB() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-	db.AutoMigrate(&entities.User{})
-	return db, nil
-}
-
-func LoadTestParam() (*contracts.Param, error) {
-	return &contracts.Param{}, nil
-}
-
 // UserName, EmailのあるユーザをPOST -> 201を返すかをテスト
-func TestCreateUser(t *testing.T) {
+func TestCreateContent(t *testing.T) {
 	db, err := LoadTestDB()
 	if err != nil {
 		t.Errorf("Failed to get DB: %v", err)
@@ -52,7 +35,7 @@ func TestCreateUser(t *testing.T) {
 	asserts.AssertEqual(t, http.StatusCreated, rec.Code, rec.Result().Status)
 }
 
-func TestGetUser(t *testing.T) {
+func TestGetContent(t *testing.T) {
 	db, err := LoadTestDB()
 	if err != nil {
 		t.Errorf("Failed to get DB: %v", err)
@@ -77,8 +60,8 @@ func TestGetUser(t *testing.T) {
 	asserts.AssertEqual(t, http.StatusOK, rec.Code, rec.Result().Status)
 }
 
-
-func TestGetUserError(t *testing.T) {
+//* 存在しないuser.Idを利用
+func TestGetContentError(t *testing.T) {
 	db, err := LoadTestDB()
 	if err != nil {
 		t.Errorf("Failed to get DB: %v", err)
