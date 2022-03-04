@@ -31,8 +31,9 @@ func Serve(addr string) {
 	}
 
 	// コントローラの準備
-	_ = controllers.LoadUserController(db, param)
+	_ = controllers.LoadUserController(db)
 	_ = controllers.LoadContentController(db, param)
+	_ = controllers.LoadAuditController(db, param)
 
 	err = http.ListenAndServe(addr, nil)
 	if err != nil {

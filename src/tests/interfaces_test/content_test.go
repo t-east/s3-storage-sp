@@ -1,4 +1,4 @@
-package usecases_test
+package interfaces_test
 
 import (
 	"sp/src/domains/entities"

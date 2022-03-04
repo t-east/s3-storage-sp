@@ -24,7 +24,7 @@ func SetupUserTestController() (*controllers.UserController, error) {
 	db.AutoMigrate(&entities.User{})
 	uc := &controllers.UserController{
 		OutputFactory: mocks.NewUserOutputPortMock(),
-		InputFactory:  interactorwddddddddddddzeeeeccc.NewUserInputPor,
+		InputFactory:  interactor.NewUserInputPor,
 		RepoFactory:   mocks.NewUserRepository,
 		Param:         contracts.Param,
 		Conn:          db,
