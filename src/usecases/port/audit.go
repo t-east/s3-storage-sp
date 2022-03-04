@@ -21,7 +21,7 @@ type AuditRepository interface {
 type AuditContract interface {
 	RegisterProof( content *entities.Proof ) error
 	GetChallen(string) (*entities.Chal, error)
-	// GetContentLog(string) (*entities.Content, error)
+	GetContentLog(string) (*entities.Content, error)
 }
 
 type AuditStorage interface {
@@ -29,5 +29,5 @@ type AuditStorage interface {
 }
 
 type AuditCrypt interface {
-	AuditProofGen( chal *entities.Chal, content *entities.Content ) (*entities.Proof, error)
+	AuditProofGen( chal *entities.Chal, content *entities.Content, contentLog *entities.Content ) (*entities.Proof, error)
 }

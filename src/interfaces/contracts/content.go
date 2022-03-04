@@ -7,8 +7,8 @@ import (
 
 type Param struct {
 	Paring string
-	G      string
-	U      string
+	G      []byte
+	U      []byte
 }
 
 type ContentContract struct {}

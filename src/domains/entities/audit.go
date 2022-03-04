@@ -15,7 +15,7 @@ type Chal struct {
 type Proof struct {
 	Myu   []byte `json:"myu"`
 	Gamma []byte `json:"gamma"`
-	ArtId string `json:"art_id"`
+	ContentId string `json:"content_id"`
 }
 
 type Proofs struct {

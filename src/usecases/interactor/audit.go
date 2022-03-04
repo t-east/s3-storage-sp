@@ -9,7 +9,7 @@ type AuditHandler struct {
 	OutputPort      port.AuditOutputPort
 	AuditContract   port.AuditContract
 	AuditCrypt      port.AuditCrypt
-	// AuditStorage    port.AuditStorage
+	ContentStorage    port.ContentStorage
 	AuditRepository port.AuditRepository
 }
 
@@ -17,14 +17,14 @@ func NewAuditInputPort(
 	outputPort port.AuditOutputPort,
 	contract port.AuditContract,
 	crypt port.AuditCrypt,
-	// storage port.AuditStorage,
+	storage port.ContentStorage,
 	repository port.AuditRepository,
 ) port.AuditInputPort {
 	return &AuditHandler{
 		OutputPort:      outputPort,
 		AuditContract:   contract,
 		AuditCrypt:      crypt,
-		// AuditStorage:    storage,
+		ContentStorage:  storage,
 		AuditRepository: repository,
 	}
 }
@@ -41,19 +41,19 @@ func (ah *AuditHandler) Challen() (*entities.Proofs, error) {
 			return nil, err
 		}
 		// //* チャレンジIDからハッシュデータをブロックチェーンから読み込む
-		// contentLog, err := ah.AuditContract.GetContentLog(ids[i])
-		// if err != nil {
-		// 	ah.OutputPort.Render(proofs, 400)
-		// 	return nil, err
-		// }
+		contentLog, err := ah.AuditContract.GetContentLog(ids[i])
+		if err != nil {
+			ah.OutputPort.Render(proofs, 400)
+			return nil, err
+		}
 		//* ファイルデータをストレージから読み込む
-		content, err := ah.AuditStorage.GetContent(ids[i])
+		content, err := ah.ContentStorage.Get(ids[i])
 		if err != nil {
 			ah.OutputPort.Render(proofs, 400)
 			return nil, err
 		}
 		//* proof作成
-		proof, err := ah.AuditCrypt.AuditProofGen(challen, content)
+		proof, err := ah.AuditCrypt.AuditProofGen(challen, content, contentLog)
 		if err != nil {
 			ah.OutputPort.Render(proofs, 400)
 			return nil, err

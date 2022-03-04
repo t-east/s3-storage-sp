@@ -3,6 +3,7 @@ module sp
 go 1.17
 
 require (
+	github.com/Nik-U/pbc v0.0.0-20181205041846-3e516ca0c5d6
 	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible
 	github.com/go-sql-driver/mysql v1.6.0

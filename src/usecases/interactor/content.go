@@ -9,14 +9,16 @@ type ContentHandler struct {
 	OutputPort      port.ContentOutputPort
 	Repository      port.ContentRepository
 	ContentContract port.ContentContract
+	Storage         port.ContentStorage
 	UserRepo        port.UserRepository
 }
 
-func NewContentInputPort(outputPort port.ContentOutputPort, repository port.ContentRepository, contract port.ContentContract, userRepo port.UserRepository) port.ContentInputPort {
+func NewContentInputPort(outputPort port.ContentOutputPort, repository port.ContentRepository, contract port.ContentContract, storage port.ContentStorage, userRepo port.UserRepository) port.ContentInputPort {
 	return &ContentHandler{
 		OutputPort:      outputPort,
 		Repository:      repository,
 		ContentContract: contract,
+		Storage:         storage,
 		UserRepo:        userRepo,
 	}
 }

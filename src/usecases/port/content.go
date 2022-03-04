@@ -23,3 +23,7 @@ type ContentContract interface {
 	Register( content *entities.Content ) error
 }
 
+type ContentStorage interface {
+	Create( content *entities.Content) (*entities.Content ,error)
+	Get(id string) (*entities.Content ,error)
+}

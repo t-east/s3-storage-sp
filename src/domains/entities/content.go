@@ -24,7 +24,7 @@ type Receipt struct {
 type ReceiptFromBC struct {
 	ContentName string   `json:"name"`
 	Owner       string   `json:"owner"`
-	ArtId       string   `json:"art_id"`
+	ContentId       string   `json:"content_id"`
 	HashedData  [][]byte `json:"hashed_data"`
 }
 
@@ -45,5 +45,5 @@ type ContentInBlockChain struct {
 	FileName   string   `json:"name"`
 	SplitCount int      `json:"split_count"`
 	Owner      string   `json:"owner"`
-	ArtId      string   `json:"art_id"`
+	ContentId      string   `json:"content_id"`
 }
