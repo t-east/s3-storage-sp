@@ -6,18 +6,21 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path"
-	"strings"
 
 	// "os"
 
 	// blank import for MySQL driver
-	eth "sp/src/drivers/ethereum"
-	rdb "sp/src/drivers/rdb"
+	"sp/src/core"
+	"sp/src/domains/entities"
+
+	// rdb "sp/src/drivers/rdb"
 	auth "sp/src/interfaces/auth"
+	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/controllers"
 
 	_ "github.com/go-sql-driver/mysql"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func LoadTestDB() (*gorm.DB, error) {
@@ -32,7 +35,7 @@ func LoadTestDB() (*gorm.DB, error) {
 func ServerHandlerPublic(w http.ResponseWriter, r *http.Request) {
 	authHandler := auth.NewAuthHandler()
 	var head string
-	head, r.URL.Path = shiftPath(r.URL.Path)
+	head, r.URL.Path = core.ShiftPath(r.URL.Path)
 	switch head {
 	case "auth":
 		authHandler.Dispatch(w, r)
@@ -44,27 +47,29 @@ func ServerHandlerPublic(w http.ResponseWriter, r *http.Request) {
 // Serve はserverを起動させます．
 func Serve() {
 	// データベース情報を取得
-	db, err := rdb.NewSQLHandler()
+	db, err := LoadTestDB()
 	if err != nil {
 		log.Fatalf("Can't get DB. %+v", err)
 	}
 
+	log.Print(db)
 	// パラメータを取得
-	param, err := eth.GetParam()
-	if err != nil {
-		log.Fatalf("Can't get Param from BC. %+v", err)
+	param := &contracts.Param{
+		Paring: "a",
+		G:      "b",
+		U:      "c",
 	}
 
 	private := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var head string
-		_, r.URL.Path = shiftPath(r.URL.Path)
-		head, r.URL.Path = shiftPath(r.URL.Path)
+		_, r.URL.Path = core.ShiftPath(r.URL.Path)
+		head, r.URL.Path = core.ShiftPath(r.URL.Path)
 		switch head {
 		case "users":
 			uc := controllers.LoadUserController(db)
 			uc.Dispatch(w, r)
 		case "content":
-			cc := controllers.LoadContentController(db, param)
+			cc := controllers.LoadContentController(db)
 			cc.Dispatch(w, r)
 		case "audit":
 			ac := controllers.LoadAuditController(db, param)
@@ -75,9 +80,9 @@ func Serve() {
 	})
 
 	sm := http.NewServeMux()
-	sm.Handle("/api/", auth.JwtMiddleware.Handler(private))
+	sm.Handle("/api/", private)
 	sm.Handle("/auth/", http.HandlerFunc(ServerHandlerPublic))
-	err = http.ListenAndServe(":8080", sm)
+	err = http.ListenAndServe(":4000", sm)
 	if err != nil {
 		log.Fatalf("Listen and serve failed. %+v", err)
 	}

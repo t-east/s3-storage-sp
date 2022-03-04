@@ -2,8 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+	"sp/src/core"
 	"sp/src/domains/entities"
+	"sp/src/interfaces/gateways"
+	"sp/src/interfaces/presenters"
+	"sp/src/usecases/interactor"
 	"sp/src/usecases/port"
 
 	"gorm.io/gorm"
@@ -33,27 +38,31 @@ func (uc *UserController) Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	outputPort := uc.OutputFactory(w)
-	repository := uc.RepoFactory(uc.Conn)
-	inputPort := uc.InputFactory(outputPort, repository)
+	outputPort := presenters.NewUserOutputPort(w)
+	repository := gateways.NewUserRepository(uc.Conn)
+	inputPort := interactor.NewUserInputPort(outputPort, repository)
 	inputPort.Create(user)
 }
 
 func (uc *UserController) Get(w http.ResponseWriter, r *http.Request) {
-	//  TODO: idの取得をちゃんとしたやつにする
-	id := "1"
-
-	outputPort := uc.OutputFactory(w)
-	repository := uc.RepoFactory(uc.Conn)
-	inputPort := uc.InputFactory(outputPort, repository)
+	_, tail := core.ShiftPath(r.URL.Path)
+	_, tail = core.ShiftPath(tail)
+	id, _ := core.ShiftPath(tail)
+	outputPort := presenters.NewUserOutputPort(w)
+	repository := gateways.NewUserRepository(uc.Conn)
+	inputPort := interactor.NewUserInputPort(outputPort, repository)
 	inputPort.FindByID(id)
 }
 
 func (uc *UserController) Dispatch(w http.ResponseWriter, r *http.Request) {
+	a, _ := core.ShiftPath(r.URL.Path)
 	switch r.Method {
 	case "POST":
 		uc.Post(w, r)
 	case "GET":
+		if a == "" {
+			return
+		}
 		uc.Get(w, r)
 	default:
 		http.NotFound(w, r)
