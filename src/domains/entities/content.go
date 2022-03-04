@@ -1,10 +1,5 @@
 package entities
 
-type ArtLog struct {
-	HashedData [][]byte `json:"hashed_data"`
-	Owner      string   `json:"owner"`
-}
-
 type Content struct {
 	Content     []byte   `json:"content"`
 	MetaData    [][]byte `json:"meta_data"`

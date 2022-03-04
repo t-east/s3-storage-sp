@@ -1,0 +1,78 @@
+package interactor
+
+import (
+	entities "sp/src/domains/entities"
+	port "sp/src/usecases/port"
+)
+
+type AuditHandler struct {
+	OutputPort    port.AuditOutputPort
+	AuditContract port.AuditContract
+	AuditCrypt    port.AuditCrypt
+	AuditStorage port.AuditStorage
+	AuditRepository port.AuditRepository
+}
+
+func NewAuditInputPort(
+	outputPort port.AuditOutputPort,
+	contract port.AuditContract,
+	crypt port.AuditCrypt,
+	storage port.AuditStorage,
+	repository port.AuditRepository,
+) port.AuditInputPort {
+	return &AuditHandler{
+		OutputPort:      outputPort,
+		AuditContract:   contract,
+		AuditCrypt:      crypt,
+		AuditStorage:    storage,
+		AuditRepository: repository,
+	}
+}
+
+func (ah *AuditHandler) Challen() (*entities.Proofs, error) {
+	proofs := &entities.Proofs{}
+	//* ブロックチェーンからcontentIDを全て読み込む
+	var ids []string = []string{"a", "a", "a", "a", "a"}
+	for i := 0; i < len(ids); i++ {
+		//* チャレンジをブロックチェーンから読み込む
+		challen, err := ah.AuditContract.GetChallen(ids[i])
+		if err != nil {
+			ah.OutputPort.Render(proofs, 400)
+			return nil, err
+		}
+		// //* チャレンジIDからハッシュデータをブロックチェーンから読み込む
+		// contentLog, err := ah.AuditContract.GetContentLog(ids[i])
+		// if err != nil {
+		// 	ah.OutputPort.Render(proofs, 400)
+		// 	return nil, err
+		// }
+		//* ファイルデータをストレージから読み込む
+		content, err := ah.AuditStorage.GetContent(ids[i])
+		if err != nil {
+			ah.OutputPort.Render(proofs, 400)
+			return nil, err
+		}
+		//* proof作成
+		proof, err := ah.AuditCrypt.AuditProofGen(challen, content)
+		if err != nil {
+			ah.OutputPort.Render(proofs, 400)
+			return nil, err
+		}
+		//* proofをブロックチェーンに登録
+		err = ah.AuditContract.RegisterProof(proof)
+		if err != nil {
+			ah.OutputPort.Render(proofs, 400)
+			return nil, err
+		}
+		//* proofをデータベースに登録
+		updatedProofData, err := ah.AuditRepository.Update(proof)
+		if err != nil {
+			ah.OutputPort.Render(proofs, 400)
+			return nil, err
+		}
+		proofs.DataList = append(proofs.DataList, updatedProofData)
+		proofs.Total += 1
+	}
+	ah.OutputPort.Render(proofs, 200)
+	return proofs, nil
+}
