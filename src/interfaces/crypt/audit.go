@@ -82,7 +82,10 @@ func (pr *auditCrypt) AuditProofGen(
 ) (*entities.Proof, error) {
 	var myu *pbc.Element
 	var gamma *pbc.Element
-	pairing, _ := pbc.NewPairingFromString(pr.Param.Paring)
+	pairing, err := pbc.NewPairingFromString(pr.Param.Paring)
+	if err != nil {
+		return nil, err
+	}
 	splitedFile, err := splitSlice(content.Content, content.SplitCount)
 	if err != nil {
 		return nil, err
@@ -90,6 +93,9 @@ func (pr *auditCrypt) AuditProofGen(
 	aTable, vTable := hashChallen(contentLog.SplitCount, int(chal.C), chal.K1, chal.K2, pairing)
 
 	var MSum *pbc.Element
+	if chal.C < 1 {
+		return nil, fmt.Errorf("challengeの形が良くない")
+	}
 	for cIndex := 0; cIndex < int(chal.C); cIndex++ {
 		meta := pairing.NewG1().SetBytes(content.MetaData[aTable[cIndex]])
 		m := pairing.NewG1().SetFromHash(splitedFile[aTable[cIndex]])
