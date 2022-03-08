@@ -26,4 +26,5 @@ type ContentContract interface {
 type ContentStorage interface {
 	Create( content *entities.Content) (*entities.Content ,error)
 	Get(id string) (*entities.Content ,error)
+	UploadContentS3(content *entities.Content) error
 }

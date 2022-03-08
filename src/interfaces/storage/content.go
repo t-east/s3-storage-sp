@@ -8,6 +8,10 @@ import (
 	"encoding/binary"
 	"fmt"
 	"os"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 type ContentStorage struct {
@@ -15,6 +19,45 @@ type ContentStorage struct {
 
 func NewContentStorage() port.ContentStorage {
 	return &ContentStorage{}
+}
+
+func (pr *ContentStorage) UploadContentS3(content *entities.Content) error {
+	// sessionの作成
+	// TODO: drivers層のsessionを渡す
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Profile:           "di",
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+	file := bytes.NewReader(content.Content)
+
+	bucketName := "xxx-bucket"
+	objectKey := content.ContentId + "/" + content.ContentName
+
+	// Uploaderを作成し、ローカルファイルをアップロード
+	// TODO: Upload関数もdrivers層に格納する
+	uploader := s3manager.NewUploader(sess)
+	_, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(objectKey),
+		Body:   file,
+	})
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < content.SplitCount; i++ {
+		metaKey := content.ContentId + "/" + content.ContentName + "/" + fmt.Sprint(i)
+		uploader = s3manager.NewUploader(sess)
+		_, err = uploader.Upload(&s3manager.UploadInput{
+			Bucket: aws.String(bucketName),
+			Key:    aws.String(metaKey),
+			Body:   file,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (pr *ContentStorage) Create(c *entities.Content) (*entities.Content, error) {
