@@ -2,6 +2,7 @@ package usecases_test
 
 import (
 	"sp/src/domains/entities"
+	"sp/src/interfaces/storage"
 	"sp/src/mocks"
 	"sp/src/usecases/interactor"
 	"testing"
@@ -11,8 +12,9 @@ func TestContentUpload(t *testing.T) {
 	outputPort := mocks.NewContentOutputPortMock()
 	repository := mocks.NewContentRepositoryMock()
 	contract := mocks.NewContentContractMock()
+	storage:= storage.NewContentStorage()
 	userRepo := mocks.NewUserRepositoryMock()
-	inputPort := interactor.NewContentInputPort(outputPort, repository, contract, userRepo)
+	inputPort := interactor.NewContentInputPort(outputPort, repository, contract, storage, userRepo)
 
 	contentInput := &entities.Content{
 		Content:     []byte{},
