@@ -31,6 +31,17 @@ func (u *Content) Render(Content *entities.Receipt, statusCode int) {
 	u.w.Write(res)
 }
 
+func (u *Content) RenderURL(url string, code int) {
+	res, err := json.Marshal(url)
+	if err != nil {
+		http.Error(u.w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	u.w.WriteHeader(code)
+	u.w.Header().Set("Content-Type", "application/json")
+	u.w.Write(res)
+}
+
 func (u *Content) RenderError(err error, code int) {
 	u.w.WriteHeader(code)
 	http.Error(u.w, err.Error(), code)

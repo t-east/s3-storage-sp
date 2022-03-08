@@ -11,6 +11,7 @@ type ContentInputPort interface {
 
 type ContentOutputPort interface {
 	Render(*entities.Receipt, int)
+	RenderURL(string, int)
 	RenderError(error, int)
 }
 
@@ -26,4 +27,5 @@ type ContentContract interface {
 type ContentStorage interface {
 	Create( content *entities.Content) (*entities.Content ,error)
 	Get(id string) (*entities.Content ,error)
+	GetPreSignedURL(key string) (string, error)
 }

@@ -66,21 +66,14 @@ func (c *ContentHandler) FindByID(id string) {
 	c.OutputPort.Render(receipt, 200)
 }
 
-// TODO idを使ってファイルのurlを取得する実装
-// func (c *ContentHandler) GetFileByID(id string) {
-// 	//* content情報を取得
-// 	receipt, err := c.Repository.Find(id)
-// 	if err != nil {
-// 		c.OutputPort.RenderError(err, 400)
-// 		return
-// 	}
-
-// 	//* 署名付きurlを返す
-//  url, err := storage(receipt.key)
-//  if err != nil {
-// 		c.OutputPort.RenderError(err, 400)
-// 		return
-// 	}
-// 	// TODO: stringを返すRenderを用意する
-// 	c.OutputPort.Render(url, 200)
-// }
+// TODO keyを使ってファイルのurlを取得する実装
+func (c *ContentHandler) GetFileByID(key string) {
+	//* 署名付きurlを返す
+ url, err := c.ContentStorage.GetPreSignedURL(key)
+ if err != nil {
+		c.OutputPort.RenderError(err, 400)
+		return
+	}
+	// TODO: stringを返すRenderを用意する
+	c.OutputPort.RenderURL(url, 200)
+}

@@ -2,6 +2,7 @@ package storage
 
 import (
 	"sp/src/domains/entities"
+	"sp/src/drivers/s3"
 	"sp/src/usecases/port"
 
 	"bytes"
@@ -33,6 +34,10 @@ func (pr *ContentStorage) Get(id string) (*entities.Content, error) {
 		UserId:      id,
 		ContentId:   id,
 	}, nil
+}
+
+func (pr *ContentStorage) GetPreSignedURL(key string) (string,error) {
+	return s3.GetPreSignedURL(key)
 }
 
 /*

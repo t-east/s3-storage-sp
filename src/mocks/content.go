@@ -6,10 +6,10 @@ import (
 )
 
 type ContentControllerMock struct {
-	RepoFactory   func() port.ContentRepository
-	ContractFactory  func() port.ContentContract
-	OutputFactory func() port.ContentOutputPort
-	InputFactory  func(
+	RepoFactory     func() port.ContentRepository
+	ContractFactory func() port.ContentContract
+	OutputFactory   func() port.ContentOutputPort
+	InputFactory    func(
 		o port.ContentOutputPort,
 		u port.ContentRepository,
 		cc port.ContentContract,
@@ -60,6 +60,9 @@ func (m *ContentRepositoryMock) Find(id string) (*entities.Receipt, error) {
 }
 
 func (m *ContentOutputPortMock) Render(*entities.Receipt, int) {
+}
+
+func (m *ContentOutputPortMock) RenderURL(string, int) {
 }
 
 func (m *ContentOutputPortMock) RenderError(error, int) {
