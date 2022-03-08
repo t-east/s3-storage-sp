@@ -90,8 +90,8 @@ func (m *AuditContractMock) GetChallen(id string) (*entities.Chal, error) {
 
 func (m *AuditCryptMock) AuditProofGen(chal *entities.Chal, content *entities.Content, contentLog *entities.Content) (*entities.Proof, error) {
 	proof := &entities.Proof{
-		Myu:       []byte{},
-		Gamma:     []byte{},
+		Myu:       []byte{1},
+		Gamma:     []byte{1},
 		ContentId: chal.ContentId,
 	}
 	return proof, nil

@@ -10,10 +10,11 @@ import (
 // コンテンツ情報永続化モックのテスト
 func TestContentRepositoryCreate(t *testing.T) {
 	FakeRepo := mocks.NewContentRepositoryMock()
+	testByte := []byte{1}
 	contentInput := &entities.Content{
-		Content:     []byte{},
-		MetaData:    [][]byte{},
-		HashedData:  [][]byte{},
+		Content:     []byte{1},
+		MetaData:    [][]byte{testByte},
+		HashedData:  [][]byte{testByte},
 		ContentName: "コンテンツ1",
 		SplitCount:  0,
 		Owner:       "オーナー",
@@ -32,10 +33,11 @@ func TestContentRepositoryCreate(t *testing.T) {
 // ブロックチェーン登録モックのテスト
 func TestContentContractRegister(t *testing.T) {
 	FakeContract := mocks.NewContentContractMock()
+	testByte := []byte{1}
 	content := &entities.Content{
-		Content:     []byte{},
-		MetaData:    [][]byte{},
-		HashedData:  [][]byte{},
+		Content:     []byte{1},
+		MetaData:    [][]byte{testByte},
+		HashedData:  [][]byte{testByte},
 		ContentName: "",
 		SplitCount:  0,
 		Owner:       "",
@@ -48,13 +50,14 @@ func TestContentContractRegister(t *testing.T) {
 	}
 }
 
-// ブロックチェーン登録モックのテスト
+// ストレージ記録モックのテスト
 func TestContentStorageCreate(t *testing.T) {
 	cs := storage.NewContentStorage()
+	testByte := []byte{1}
 	content := &entities.Content{
-		Content:     []byte{72, 73},
-		MetaData:    [][]byte{},
-		HashedData:  [][]byte{},
+		Content:     []byte{1},
+		MetaData:    [][]byte{testByte},
+		HashedData:  [][]byte{testByte},
 		ContentName: "test1",
 		SplitCount:  0,
 		Owner:       "",

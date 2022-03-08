@@ -56,8 +56,8 @@ func Serve() {
 	// パラメータを取得
 	param := &contracts.Param{
 		Paring: "a",
-		G:      "b",
-		U:      "c",
+		G:      []byte{1},
+		U:      []byte{1},
 	}
 
 	private := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

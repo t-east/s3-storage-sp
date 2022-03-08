@@ -8,8 +8,12 @@ import (
 	"net/http/httptest"
 	"sp/src/asserts"
 	"sp/src/domains/entities"
+	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/controllers"
 	"sp/src/interfaces/gateways"
+	"sp/src/interfaces/presenters"
+	"sp/src/interfaces/storage"
+	"sp/src/usecases/interactor"
 	"testing"
 )
 
@@ -28,10 +32,11 @@ func TestCreateContent(t *testing.T) {
 	}
 	user, _ := ur.Create(u)
 	var buf bytes.Buffer
+	testByte := []byte{1}
 	if err := json.NewEncoder(&buf).Encode(&entities.Content{
-		Content:     []byte{1,2,3,4,5},
-		MetaData:    [][]byte{},
-		HashedData:  [][]byte{},
+		Content:     []byte{1, 2, 3, 4, 5},
+		MetaData:    [][]byte{testByte} ,
+		HashedData:  [][]byte{testByte},
 		ContentName: "コンテンツ1",
 		SplitCount:  2,
 		Owner:       "sdf",
@@ -55,39 +60,54 @@ func TestGetContent(t *testing.T) {
 		t.Errorf("Failed to get DB: %v", err)
 		return
 	}
-
-	ur := gateways.NewUserRepository(db)
+	//* ユーザ作成
 	u := &entities.User{
 		Address: "sdf",
 		PubKey: []byte("pubKey"),
 		PrivKey: []byte("privKey"),
 	}
-	user, err := ur.Create(u)
+	recCreate := httptest.NewRecorder()
+	uo := presenters.NewUserOutputPort(recCreate)
+	ur := gateways.NewUserRepository(db)
+	ui := interactor.NewUserInputPort(uo, ur)
+	user, err := ui.Create(u)
 	if err != nil {
-		t.Errorf("Can't create user: %v", err)
-		return
+		t.Errorf("Failed to Create User: %v", err)
 	}
-	cr := gateways.NewContentRepository(db)
+	testByte := []byte{1}
+	//* 作成したユーザのIDでコンテンツをアップロード
 	c := &entities.Content{
 		Content:     []byte{},
-		MetaData:    [][]byte{},
-		HashedData:  [][]byte{},
+		MetaData:    [][]byte{testByte},
+		HashedData:  [][]byte{testByte},
 		ContentName: "",
 		SplitCount:  0,
 		Owner:       "",
 		Id:          "sdf",
 		UserId:      user.ID,
 	}
-	content, err := cr.Create(c)
+	recUpload := httptest.NewRecorder()
+	co := presenters.NewContentOutputPort(recUpload)
+	cr := gateways.NewContentRepository(db)
+	cs := storage.NewContentStorage()
+	cco := contracts.NewContentContracts()
+	ci := interactor.NewContentInputPort(co, cr, cco, cs, ur)
+	content, err := ci.Upload(c)
 	if err != nil {
-		t.Errorf("Can't create user: %v", err)
-		return
+		t.Errorf("Failed to Create Content: %v", err)
 	}
+	//*　作成したコンテンツのIDを用いてコンテンツを取得
 	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/contents/%s", content.Id), nil)
 	rec := httptest.NewRecorder()
 	cc := controllers.LoadContentController(db)
 	cc.Dispatch(rec, req)
+	receipt := &entities.Receipt{}
+	err = json.NewDecoder(rec.Body).Decode(&receipt)
+	if err != nil {
+		t.Errorf("Failed to Get Content: %v", err)
+	}
 	asserts.AssertEqual(t, http.StatusOK, rec.Code, rec.Result().Status)
+	asserts.AssertEqual(t, content, receipt, rec.Result().Status)
 }
 
 //* 存在しないUserIDで作成する -> エラー
