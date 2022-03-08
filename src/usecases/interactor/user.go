@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"log"
 	"sp/src/core"
 	entities "sp/src/domains/entities"
 	port "sp/src/usecases/port"
@@ -22,15 +23,13 @@ func NewUserInputPort(outputPort port.UserOutputPort, repository port.UserReposi
 //* ユーザ登録
 func (uc *UserHandler) Create(user *entities.User) (*entities.User, error) {
 	//* データベースからユーザを検索．登録済みアドレスの場合ははじく
-	found, err := uc.Repository.FindByAddress(user.Address)
-	if err != nil {
-		uc.OutputPort.RenderError(err, 400)
-		return nil, err
-	}
-	if found != nil {
-		uc.OutputPort.RenderError(err, 400)
-		return nil, err
-	}
+	// TODO 登録済みの場合の処理
+	found, _ := uc.Repository.FindByAddress(user.Address)
+	// if found != nil {
+	// 	uc.OutputPort.RenderError(err, 400)
+	// 	return nil, err
+	// }
+	log.Print(found)
 	user.ID = core.MakeULID()
 	//* データベースに保存
 	created, err := uc.Repository.Create(user)
