@@ -17,7 +17,7 @@ func TestContentUpload(t *testing.T) {
 	inputPort := interactor.NewContentInputPort(outputPort, repository, contract, storage, userRepo)
 
 	contentInput := &entities.Content{
-		Content:     []byte{},
+		Content:     []byte{1},
 		MetaData:    [][]byte{},
 		HashedData:  [][]byte{},
 		ContentName: "コンテンツ1",

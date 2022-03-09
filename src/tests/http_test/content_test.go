@@ -26,6 +26,7 @@ func TestCreateContent(t *testing.T) {
 	}
 	ur := gateways.NewUserRepository(db)
 	u := &entities.User{
+		ID:      "sdsdsd",
 		Address: "sdf",
 		PubKey:  []byte("pubKey"),
 		PrivKey: []byte("privKey"),
@@ -35,7 +36,7 @@ func TestCreateContent(t *testing.T) {
 	testByte := []byte{1}
 	if err := json.NewEncoder(&buf).Encode(&entities.Content{
 		Content:     []byte{1, 2, 3, 4, 5},
-		MetaData:    [][]byte{testByte} ,
+		MetaData:    [][]byte{testByte},
 		HashedData:  [][]byte{testByte},
 		ContentName: "コンテンツ1",
 		SplitCount:  2,
@@ -63,7 +64,7 @@ func TestGetContent(t *testing.T) {
 	//* ユーザ作成
 	u := &entities.User{
 		Address: "sdf",
-		PubKey: []byte("pubKey"),
+		PubKey:  []byte("pubKey"),
 		PrivKey: []byte("privKey"),
 	}
 	recCreate := httptest.NewRecorder()
