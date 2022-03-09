@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"path/filepath"
 	"sp/src/domains/entities"
 	"sp/src/drivers/s3"
 	"sp/src/usecases/port"
@@ -18,7 +19,8 @@ func NewContentStorage() port.ContentStorage {
 	return &ContentStorage{}
 }
 func (pr *ContentStorage) Create(c *entities.Content) (*entities.Content, error) {
-	WriteBinaryFile(c.Id, binary.BigEndian, c.Content)
+	storagePath := "storage/" + c.Id
+	WriteBinaryFile(storagePath, binary.BigEndian, c.Content)
 	return c, nil
 }
 
@@ -36,7 +38,7 @@ func (pr *ContentStorage) Get(id string) (*entities.Content, error) {
 	}, nil
 }
 
-func (pr *ContentStorage) GetPreSignedURL(key string) (string,error) {
+func (pr *ContentStorage) GetPreSignedURL(key string) (string, error) {
 	return s3.GetPreSignedURL(key)
 }
 
@@ -50,6 +52,9 @@ func WriteBinaryFile(filename string, order binary.ByteOrder, val interface{}) {
 	err := binary.Write(buf, order, val)
 	if err != nil {
 		fmt.Println("err:", err)
+		return
+	}
+	if err = os.MkdirAll(filepath.Dir(filename), 0770); err != nil {
 		return
 	}
 	// ファイル作成
