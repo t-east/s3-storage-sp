@@ -1,11 +1,8 @@
 package crypt
 
 import (
-	"crypto/md5"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
-	"math/big"
+	"sp/src/core"
 	"sp/src/domains/entities"
 	"sp/src/interfaces/contracts"
 	"sp/src/usecases/port"
@@ -23,58 +20,6 @@ func NewAuditCrypt(param *contracts.Param) port.AuditCrypt {
 	}
 }
 
-func hashChallen(n int, c int, k1, k2 []byte, pairing *pbc.Pairing) ([]int, []*pbc.Element) {
-
-	k1Big := new(big.Int).SetBytes(k1)
-	k2Big := new(big.Int).SetBytes(k2)
-	nBig := big.NewInt(int64(n))
-	var aTable []int
-	var vTable []*pbc.Element
-	for i := 0; i < n; i++ {
-		iBig := big.NewInt(int64(i + 1))
-		ik1Big := new(big.Int).Mod(new(big.Int).Mul(iBig, k1Big), nBig)
-		aTable = append(aTable, int(ik1Big.Int64()))
-	}
-	for j := 0; j < c; j++ {
-		iBig := big.NewInt(int64(j + 1))
-		ik2Big := pairing.NewZr().SetBig(new(big.Int).Mul(iBig, k2Big))
-		vTable = append(vTable, ik2Big)
-	}
-	return aTable, vTable
-}
-
-func splitSlice(list []byte, size int) ([][]byte, error) {
-	if size <= 0 {
-		return nil, fmt.Errorf("size need positive number")
-	}
-	var result [][]byte
-	var tmp = list
-	splitNum := len(list) / size
-	for i := 0; i < size; i++ {
-		if i == size {
-			if len(tmp) == 0 {
-				break
-			}
-			r := sha256.Sum256(tmp[:])
-			result = append(result, r[:])
-		} else {
-			r := sha256.Sum256(tmp[0:splitNum])
-			result = append(result, r[:])
-			tmp = tmp[splitNum:]
-		}
-	}
-	return result, nil
-}
-
-func getBinaryBySHA256(s string) []byte {
-	r := sha256.Sum256([]byte(s))
-	return r[:]
-}
-func MD5(s string) []byte {
-	hash := md5.Sum([]byte(s))
-	return []byte(hex.EncodeToString(hash[:]))
-}
-
 func (pr *auditCrypt) AuditProofGen(
 	chal *entities.Chal,
 	content *entities.Content,
@@ -86,11 +31,11 @@ func (pr *auditCrypt) AuditProofGen(
 	if err != nil {
 		return nil, err
 	}
-	splitedFile, err := splitSlice(content.Content, content.SplitCount)
+	splitedFile, err := core.SplitSlice(content.Content, content.SplitCount)
 	if err != nil {
 		return nil, err
 	}
-	aTable, vTable := hashChallen(contentLog.SplitCount, int(chal.C), chal.K1, chal.K2, pairing)
+	aTable, vTable := core.HashChallen(contentLog.SplitCount, int(chal.C), chal.K1, chal.K2, pairing)
 
 	var MSum *pbc.Element
 	if chal.C < 1 {
@@ -99,7 +44,7 @@ func (pr *auditCrypt) AuditProofGen(
 	for cIndex := 0; cIndex < int(chal.C); cIndex++ {
 		meta := pairing.NewG1().SetBytes(content.MetaData[aTable[cIndex]])
 		m := pairing.NewG1().SetFromHash(splitedFile[aTable[cIndex]])
-		mm := getBinaryBySHA256(m.X().String())
+		mm := core.GetBinaryBySHA256(m.X().String())
 		M := pairing.NewG1().SetBytes(mm)
 		if cIndex == 0 {
 			myu = pairing.NewZr().MulBig(vTable[cIndex], m.X())
@@ -120,5 +65,74 @@ func (pr *auditCrypt) AuditProofGen(
 		ContentId: contentLog.ContentId,
 	}
 	return proof, nil
+
+}
+
+func CreateMetaData(uc *entities.Content, user *entities.User, param *contracts.Param) (*entities.Content, error) {
+	pairing, err := pbc.NewPairingFromString(param.Paring)
+	if err != nil {
+		return nil, err
+	}
+	u := pairing.NewG1().SetBytes(param.U)
+	splitedFile, err := core.SplitSlice(uc.Content, uc.SplitCount)
+	if err != nil {
+		return nil, err
+	}
+	privKey := pairing.NewZr().SetBytes(user.PrivKey)
+
+	// メタデータの作成
+	var metaData [][]byte
+	var hashData [][]byte
+	metaToHash := ""
+	for i := 0; i < len(splitedFile); i++ {
+		m := pairing.NewG1().SetFromHash(splitedFile[i])
+
+		mm := core.GetBinaryBySHA256(m.X().String())
+		M := pairing.NewG1().SetBytes(mm)
+
+		um := pairing.NewG1().PowBig(u, m.X())
+		temp := pairing.NewG1().Mul(um, M)
+		meta := pairing.NewG1().MulZn(temp, privKey)
+
+		metaData = append(metaData, meta.Bytes())
+		metaToHash = metaToHash + meta.String()
+		hashData = append(hashData, mm)
+	}
+
+	return &entities.Content{
+		Content:     uc.Content,
+		MetaData:    metaData,
+		HashedData:  hashData,
+		ContentName: uc.ContentName,
+		SplitCount:  uc.SplitCount,
+		Owner:       uc.Owner,
+		Id:          "",
+		UserId:      uc.UserId,
+		ContentId:   "",
+	}, nil
+}
+
+func AuditVerify(params *contracts.Param, pubKeyByte []byte, content *entities.Content, proof *entities.Proof, chal *entities.Chal) ([]byte, []byte, error) {
+	pairing, _ := pbc.NewPairingFromString(params.Paring)
+	aTable, vTable := core.HashChallen(content.SplitCount, chal.C, chal.K1, chal.K2, pairing)
+	g := pairing.NewG1().SetBytes(params.G)
+	pubKey := pairing.NewG1().SetBytes(pubKeyByte)
+	u := pairing.NewG1().SetBytes(params.U)
+	myuT := pairing.NewZr().SetBytes(proof.Myu)
+	gammaT := pairing.NewG1().SetBytes(proof.Gamma)
+	var MSum *pbc.Element
+	for c := 0; c < chal.C; c++ {
+		M := pairing.NewG1().SetBytes(content.HashedData[aTable[c]])
+		if c == 0 {
+			MSum = pairing.NewG1().PowZn(M, vTable[c])
+		} else {
+			MSum.Mul(MSum, pairing.NewG1().PowZn(M, vTable[c]))
+		}
+	}
+	uProof := pairing.NewG1().PowZn(u, myuT)
+	right_hand := pairing.NewG1().Mul(uProof, MSum)
+	pairingLeft := pairing.NewGT().Pair(gammaT, g)
+	pairingRight := pairing.NewGT().Pair(right_hand, pubKey)
+	return pairingLeft.Bytes(), pairingRight.Bytes(), nil
 
 }
