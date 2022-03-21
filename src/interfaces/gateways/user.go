@@ -4,6 +4,8 @@ import (
 	"sp/src/domains/entities"
 	"sp/src/usecases/port"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"gorm.io/gorm"
 )
 
@@ -37,7 +39,12 @@ func (ur *userRepository) FindByAddress(address string) (*entities.User, error) 
 }
 
 func (ur *userRepository) Create(u *entities.User) (*entities.User, error) {
-	err := ur.Conn.Create(u).Error
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), 12)
+	if err != nil {
+		return nil, err
+	}
+	u.Password = string(hash)
+	err = ur.Conn.Create(u).Error
 	if err != nil {
 		return nil, err
 	}

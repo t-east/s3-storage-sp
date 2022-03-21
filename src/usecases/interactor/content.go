@@ -32,11 +32,11 @@ func (c *ContentHandler) Upload(contentInput *entities.Content) (*entities.Recei
 		return nil, err
 	}
 	//* 登録済みユーザかを確認する．
-	_, err = c.UserRepo.FindByID(contentInput.UserId)
-	if err != nil {
-		c.OutputPort.RenderError(err, 400)
-		return nil, err
-	}
+	// _, err = c.UserRepo.FindByID(contentInput.UserId)
+	// if err != nil {
+	// 	c.OutputPort.RenderError(err, 400)
+	// 	return nil, err
+	// }
 	//* ulidを作成
 	contentInput.Id = core.MakeULID()
 	//* コンテンツをストレージに保存

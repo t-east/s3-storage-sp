@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"sp/src/core"
 	"sp/src/domains/entities"
-	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/gateways"
 	"sp/src/interfaces/presenters"
 	"sp/src/interfaces/storage"
+	"sp/src/mocks"
 	"sp/src/usecases/interactor"
 	"sp/src/usecases/port"
 
@@ -46,7 +46,7 @@ func (cc *ContentController) Post(w http.ResponseWriter, r *http.Request) {
 	}
 	outputPort := presenters.NewContentOutputPort(w)
 	repository := gateways.NewContentRepository(cc.Conn)
-	contract := contracts.NewContentContracts()
+	contract := mocks.NewContentContractMock()
 	storage := storage.NewContentStorage()
 	userRepo := gateways.NewUserRepository(cc.Conn)
 	inputPort := interactor.NewContentInputPort(
@@ -65,10 +65,16 @@ func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
 	id, _ := core.ShiftPath(tail)
 	outputPort := presenters.NewContentOutputPort(w)
 	repository := gateways.NewContentRepository(cc.Conn)
-	userRepo := gateways.NewUserRepository(cc.Conn)
-	contract := contracts.NewContentContracts()
+	contract := mocks.NewContentContractMock()
 	storage := storage.NewContentStorage()
-	inputPort := interactor.NewContentInputPort(outputPort, repository, contract, storage, userRepo)
+	userRepo := gateways.NewUserRepository(cc.Conn)
+	inputPort := interactor.NewContentInputPort(
+		outputPort,
+		repository,
+		contract,
+		storage,
+		userRepo,
+	)
 	inputPort.FindByID(id)
 }
 
