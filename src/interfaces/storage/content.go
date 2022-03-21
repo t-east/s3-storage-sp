@@ -19,8 +19,12 @@ func NewContentStorage() port.ContentStorage {
 	return &ContentStorage{}
 }
 func (pr *ContentStorage) Create(c *entities.Content) (*entities.Content, error) {
-	storagePath := "storage/" + c.Id
+	storagePath := "storage/" + c.Id + "/content"
 	WriteBinaryFile(storagePath, binary.BigEndian, c.Content)
+	for i:=0; i<c.SplitCount; i++ {
+		storagePath := "storage/" + c.Id + fmt.Sprint(i)
+		WriteBinaryFile(storagePath, binary.BigEndian, c.MetaData[i])
+	}
 	return c, nil
 }
 
