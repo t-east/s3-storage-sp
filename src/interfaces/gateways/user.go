@@ -19,7 +19,7 @@ func NewUserRepository(conn *gorm.DB) port.UserRepository {
 	}
 }
 
-func (ur *userRepository) FindByID(id string) (*entities.User, error) {
+func (ur *userRepository) FindByID(id uint) (*entities.User, error) {
 	var user = &entities.User{}
 	user.ID = id
 	err := ur.Conn.First(&user).Error
