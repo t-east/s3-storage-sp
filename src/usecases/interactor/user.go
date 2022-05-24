@@ -5,17 +5,16 @@ import (
 	"sp/src/core"
 	entities "sp/src/domains/entities"
 	port "sp/src/usecases/port"
+	"strconv"
 )
 
 type UserHandler struct {
-	OutputPort port.UserOutputPort
 	Repository port.UserRepository
 }
 
 // NewUserInputPort はUserInputPortを取得します．
-func NewUserInputPort(outputPort port.UserOutputPort, repository port.UserRepository) port.UserInputPort {
+func NewUserInputPort(repository port.UserRepository) port.UserInputPort {
 	return &UserHandler{
-		OutputPort: outputPort,
 		Repository: repository,
 	}
 }
@@ -30,24 +29,24 @@ func (uc *UserHandler) Create(user *entities.User) (*entities.User, error) {
 	// 	return nil, err
 	// }
 	log.Print(found)
-	user.ID = core.MakeULID()
+	id64, err := strconv.ParseUint(core.MakeULID(),10, 64)
+	if err != nil {
+		return nil, err
+	}
+	user.ID = uint(id64)
 	//* データベースに保存
 	created, err := uc.Repository.Create(user)
 	if err != nil {
-		uc.OutputPort.RenderError(err, 400)
 		return nil, err
 	}
-	uc.OutputPort.Render(created, 201)
 	return created, nil
 }
 
 //* ユーザ情報を取得
-func (uc *UserHandler) FindByID(id string) (*entities.User, error) {
+func (uc *UserHandler) FindByID(id uint) (*entities.User, error) {
 	user, err := uc.Repository.FindByID(id)
 	if err != nil {
-		uc.OutputPort.RenderError(err, 400)
 		return nil, err
 	}
-	uc.OutputPort.Render(user, 200)
 	return user, nil
 }

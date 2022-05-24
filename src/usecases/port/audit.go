@@ -8,11 +8,6 @@ type AuditInputPort interface {
 	Challen() (*entities.Proofs, error)
 }
 
-type AuditOutputPort interface {
-	Render(*entities.Proofs, int)
-	RenderError(error, int)
-}
-
 type AuditRepository interface {
 	Create(proof *entities.Proof) (*entities.Proof, error)
 	Update(proof *entities.Proof) (*entities.Proof, error)

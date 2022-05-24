@@ -30,8 +30,8 @@ func TestUserFindByID(t *testing.T) {
 
 	user := &entities.User{Address: "sdf", PubKey: []byte("sdf"), PrivKey: []byte("sdf")}
 
-	id := "7"
-	found, err := inputPort.FindByID(id)
+	id := 7
+	found, err := inputPort.FindByID(uint(id))
 	if err != nil {
 		t.Fatal(err)
 	}

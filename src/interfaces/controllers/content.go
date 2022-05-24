@@ -6,7 +6,6 @@ import (
 	"sp/src/core"
 	"sp/src/domains/entities"
 	"sp/src/interfaces/gateways"
-	"sp/src/interfaces/presenters"
 	"sp/src/interfaces/storage"
 	"sp/src/mocks"
 	"sp/src/usecases/interactor"
@@ -22,11 +21,8 @@ type ContentController struct {
 	ContractFactory func() port.ContentContract
 	// -> crypt.NewContentCrypt
 	CryptFactory func() port.ContentContract
-	// -> presenter.NewContentOutputPort
-	OutputFactory func(w http.ResponseWriter) port.ContentOutputPort
 	// -> interactor.NewContentInputPort
 	InputFactory func(
-		o port.ContentOutputPort,
 		u port.ContentRepository,
 		co port.ContentContract,
 	) port.ContentInputPort
@@ -44,13 +40,11 @@ func (cc *ContentController) Post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	outputPort := presenters.NewContentOutputPort(w)
 	repository := gateways.NewContentRepository(cc.Conn)
 	contract := mocks.NewContentContractMock()
 	storage := storage.NewContentStorage()
 	userRepo := gateways.NewUserRepository(cc.Conn)
 	inputPort := interactor.NewContentInputPort(
-		outputPort,
 		repository,
 		contract,
 		storage,
@@ -63,13 +57,11 @@ func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
 	_, tail := core.ShiftPath(r.URL.Path)
 	_, tail = core.ShiftPath(tail)
 	id, _ := core.ShiftPath(tail)
-	outputPort := presenters.NewContentOutputPort(w)
 	repository := gateways.NewContentRepository(cc.Conn)
 	contract := mocks.NewContentContractMock()
 	storage := storage.NewContentStorage()
 	userRepo := gateways.NewUserRepository(cc.Conn)
 	inputPort := interactor.NewContentInputPort(
-		outputPort,
 		repository,
 		contract,
 		storage,
