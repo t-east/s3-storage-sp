@@ -41,26 +41,41 @@ func (ur *ContentRepository) Find(id string) (*entities.Content, error) {
 	return content, nil
 }
 
-	id := ulid.GenerateIdentifier()
-	if err != nil {
-		return nil, err
-	}
-	return contents, nil
-}
-
 func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Content, err error) {
+	id := ulid.GenerateIdentifier()
 	content := fiware.CreateEntityRequest{
-		Type_: "string",
-		Id:    "urn:ngsi-ld:Store:001",
+		Type_:    "Toet",
+		Id:       id.Value(),
 	}
 	cfg := fiware.NewConfiguration()
 	client := fiware.NewAPIClient(cfg)
 
 	ctx := context.Background()
 	res, err := client.EntitiesApi.CreateEntity(ctx, content, "application/json", &fiware.EntitiesApiCreateEntityOpts{})
+	log.Print(res)
 	if err != nil {
 		return nil, err
 	}
-	log.Print(res.Request.Response)
-	return c, nil
+	return &entities.Content{
+		ID:       id.Value(),
+		Address:  c.Address,
+		Content:  entities.SampleData{},
+		MetaData: c.MetaData,
+		HashData: c.HashData,
+	}, nil
+}
+
+func (ur *ContentRepository) All() (receipt []*entities.Content, err error) {
+	cfg := fiware.NewConfiguration()
+	client := fiware.NewAPIClient(cfg)
+
+	ctx := context.Background()
+	list, res, err := client.EntitiesApi.ListEntities(ctx, &fiware.EntitiesApiListEntitiesOpts{})
+	log.Print(res)
+	log.Print(list)
+	if err != nil {
+		return nil, err
+	}
+	var l []*entities.Content
+	return l, nil
 }

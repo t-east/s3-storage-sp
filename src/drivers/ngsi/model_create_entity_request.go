@@ -11,7 +11,12 @@ package swagger
 type CreateEntityRequest struct {
 	Type_ string `json:"type"`
 	Id string `json:"id"`
-	Temperature *interface{} `json:"temperature"`
-	Humidity *interface{} `json:"humidity"`
-	Location *interface{} `json:"location"`
 }
+
+// type CreateEntityRequest struct {
+// 	Type_ string `json:"type"`
+// 	Id string `json:"id"`
+// 	Temperature *interface{} `json:"temperature"`
+// 	Humidity *interface{} `json:"humidity"`
+// 	Location *interface{} `json:"location"`
+// }

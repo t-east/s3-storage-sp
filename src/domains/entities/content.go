@@ -1,8 +1,9 @@
 package entities
 
 type SampleData struct {
-	Name   string `json:"name"`
-	Length int    `json:"length"`
+	Name     string `json:"name"`
+	Length   int    `json:"length"`
+	Location int    `json:"location"`
 }
 
 type ContentIn struct {
