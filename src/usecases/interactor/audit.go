@@ -6,10 +6,11 @@ import (
 )
 
 type AuditHandler struct {
-	AuditContract   port.AuditContract
-	AuditCrypt      port.AuditCrypt
-	ContentStorage  port.ContentStorage
-	AuditRepository port.AuditRepository
+	AuditContract     port.AuditContract
+	AuditCrypt        port.AuditCrypt
+	ContentStorage    port.ContentStorage
+	AuditRepository   port.AuditRepository
+	ContentRepository port.ContentRepository
 }
 
 func NewAuditInputPort(
@@ -17,32 +18,38 @@ func NewAuditInputPort(
 	crypt port.AuditCrypt,
 	storage port.ContentStorage,
 	repository port.AuditRepository,
+	c_repo port.ContentRepository,
 ) port.AuditInputPort {
 	return &AuditHandler{
-		AuditContract:   contract,
-		AuditCrypt:      crypt,
-		ContentStorage:  storage,
-		AuditRepository: repository,
+		AuditContract:     contract,
+		AuditCrypt:        crypt,
+		ContentStorage:    storage,
+		AuditRepository:   repository,
+		ContentRepository: c_repo,
 	}
 }
 
-func (ah *AuditHandler) Challen() (*entities.Proofs, error) {
+func (ah *AuditHandler) ProofGen() (*entities.Proofs, error) {
 	proofs := &entities.Proofs{}
-	//* ブロックチェーンからcontentIDを全て読み込む
-	var ids []string = []string{"a", "a", "a", "a", "a"}
-	for i := 0; i < len(ids); i++ {
+	// * DBからコンテンツ情報を全取得
+	receipts, err := ah.ContentRepository.All()
+	if err != nil {
+		return nil, err
+	}
+	//* SPが所有する全てのコンテンツに対して証明データを生成する
+	for i := 0; i < len(receipts); i++ {
 		//* チャレンジをブロックチェーンから読み込む
-		challen, err := ah.AuditContract.GetChallen(ids[i])
+		challen, err := ah.AuditContract.GetChallen(receipts[i].ID)
 		if err != nil {
 			return nil, err
 		}
 		// //* チャレンジIDからハッシュデータをブロックチェーンから読み込む
-		contentLog, err := ah.AuditContract.GetContentLog(ids[i])
+		contentLog, err := ah.AuditContract.GetContentLog(receipts[i].ID)
 		if err != nil {
 			return nil, err
 		}
 		//* ファイルデータをストレージから読み込む
-		content, err := ah.ContentStorage.Get(ids[i])
+		content, err := ah.ContentStorage.Get(receipts[i].ID)
 		if err != nil {
 			return nil, err
 		}

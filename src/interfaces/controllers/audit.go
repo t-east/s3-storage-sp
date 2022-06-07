@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"sp/src/domains/entities"
 	"sp/src/interfaces/contracts"
@@ -36,11 +37,24 @@ func LoadAuditController(db *gorm.DB, param *entities.Param) *AuditController {
 
 func (ac *AuditController) Post(w http.ResponseWriter, r *http.Request) {
 	repository := gateways.NewProofRepository(ac.Conn)
+	contentRepo := gateways.NewContentRepository(ac.Conn)
 	contract := contracts.NewAuditContracts()
 	crypt := crypt.NewAuditCrypt(ac.Param)
 	storage := storage.NewContentStorage()
-	inputPort := interactor.NewAuditInputPort(contract, crypt, storage, repository)
-	inputPort.Challen()
+	inputPort := interactor.NewAuditInputPort(contract, crypt, storage, repository, contentRepo)
+	proofs, err := inputPort.ProofGen()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	res, err := json.Marshal(proofs)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
 }
 
 func (ac *AuditController) Dispatch(w http.ResponseWriter, r *http.Request) {

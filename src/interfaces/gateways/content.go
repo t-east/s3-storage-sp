@@ -1,7 +1,10 @@
 package gateways
 
 import (
+	"context"
+	"log"
 	"sp/src/domains/entities"
+	fiware "sp/src/drivers/ngsi"
 	"sp/src/usecases/port"
 
 	"gorm.io/gorm"
@@ -27,27 +30,38 @@ func NewContentRepository(conn *gorm.DB) port.ContentRepository {
 	}
 }
 
-func (ur *ContentRepository) Find(id string) (*entities.Receipt, error) {
-	var receipt = &entities.Receipt{}
-	receipt.Id = id
-	err := ur.Conn.First(&receipt).Error
+func (ur *ContentRepository) Find(id string) (*entities.Content, error) {
+	var content = &entities.Content{}
+	content.ID = id
+	err := ur.Conn.First(&content).Error
 	if err != nil {
 		return nil, err
 	}
-	return receipt, nil
+	return content, nil
 }
 
-func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Receipt, err error) {
-	receipt = &entities.Receipt{
-		Id:           c.Id,
-		UserId:       c.UserId,
-		ContentLogId: c.Id,
-		ContentURL:   "localhost:4001/api/content/" + c.Id,
-		FileName:     c.ContentName,
-	}
-	err = ur.Conn.Create(receipt).Error
+func (ur *ContentRepository) All() ([]*entities.Content, error) {
+	var contents []*entities.Content
+	err := ur.Conn.Find(contents).Error
 	if err != nil {
 		return nil, err
 	}
-	return receipt, nil
+	return contents, nil
+}
+
+func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Content, err error) {
+	content := fiware.CreateEntityRequest{
+		Type_: "string",
+		Id:    "urn:ngsi-ld:Store:001",
+	}
+	cfg := fiware.NewConfiguration()
+	client := fiware.NewAPIClient(cfg)
+
+	ctx := context.Background()
+	res, err := client.EntitiesApi.CreateEntity(ctx, content, "application/json", &fiware.EntitiesApiCreateEntityOpts{})
+	if err != nil {
+		return nil, err
+	}
+	log.Print(res.Request.Response)
+	return c, nil
 }

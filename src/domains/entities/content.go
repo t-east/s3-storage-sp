@@ -1,35 +1,51 @@
 package entities
 
+type SampleData struct {
+	Name   string `json:"name"`
+	Length int    `json:"length"`
+}
+
+type ContentIn struct {
+	Address  string     `json:"address"`
+	Content  SampleData `json:"content"`
+	MetaData [][]byte   `json:"meta_data"`
+}
+
+type ContentInDB struct {
+	ID       string     `json:"id"`
+	Content  SampleData `json:"content"`
+	MetaData [][]byte   `json:"metadata"`
+}
+
+type MetaDataInDB struct {
+	ID        string `json:"id"`
+	ContentID uint   `json:"content_id"`
+	MetaData  []byte `json:"metadata"`
+}
+
 type Content struct {
-	Content     []byte   `json:"content"`
-	MetaData    [][]byte `json:"meta_data"`
-	HashedData  [][]byte `json:"hashed_data"`
-	ContentName string   `json:"name"`
-	SplitCount  int      `json:"split_count"`
-	Owner       string   `json:"owner"`
-	Id          string   `json:"id"`
-	UserId      string   `json:"user_id"`
-	ContentId   string   `json:"content_id"`
+	ID       string     `json:"id"`
+	Address  string     `json:"address"`
+	Content  SampleData `json:"content"`
+	MetaData [][]byte   `json:"metadata"`
+	HashData []string   `json:"hashdata"`
+}
+
+type ContentLog struct {
+	Owner    string
+	Hash     []string
+	Provider string
 }
 
 type Receipt struct {
-	Id           string `gorm:"primary_key" json:"id"`
-	ContentLogId string `json:"content_log_id"`
-	ContentURL   string `json:"content_url"`
-	FileName     string `json:"name"`
-	UserId       string `json:"user_id"`
-	ContentId    string `json:"content_id"`
+	ID       string     `json:"id"`
+	Content  SampleData `json:"content"`
+	MetaData [][]byte   `json:"metadata"`
+	HashData []string   `json:"hashdata"`
 }
 
-type ReceiptFromBC struct {
-	ContentName string   `json:"name"`
-	Owner       string   `json:"owner"`
-	ContentId   string   `json:"content_id"`
-	HashedData  [][]byte `json:"hashed_data"`
-}
-
-func NewContent() *Content {
-	return &Content{}
+func NewContent() *ContentIn {
+	return &ContentIn{}
 }
 
 type ContentInStorage struct {
@@ -46,4 +62,9 @@ type ContentInBlockChain struct {
 	SplitCount int      `json:"split_count"`
 	Owner      string   `json:"owner"`
 	ContentId  string   `json:"content_id"`
+}
+
+type Key struct {
+	PubKey  []byte `json:"pubkey"`
+	PrivKey []byte `json:"privkey"`
 }

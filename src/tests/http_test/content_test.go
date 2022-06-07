@@ -1,126 +1,153 @@
 package http
 
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"net/http/httptest"
-	"sp/src/asserts"
-	"sp/src/domains/entities"
-	"sp/src/interfaces/contracts"
-	"sp/src/interfaces/controllers"
-	"sp/src/interfaces/gateways"
-	"sp/src/interfaces/presenters"
-	"sp/src/interfaces/storage"
-	"sp/src/usecases/interactor"
-	"testing"
-)
+// import (
+// 	"bytes"
+// 	"io"
+// 	"mime/multipart"
+// 	"net/http"
+// 	"net/http/httptest"
+// 	"sp/src/asserts"
+// 	"sp/src/core"
+// 	"sp/src/domains/entities"
+// 	"sp/src/drivers/router"
+// 	"sp/src/interfaces/controllers"
+// 	mock_port "sp/src/mocks"
+// 	"testing"
 
-//* 登録済みユーザのuserIdでコンテンツを作成
-func TestCreateContent(t *testing.T) {
-	db, err := LoadTestDB()
-	if err != nil {
-		t.Errorf("Failed to get DB: %v", err)
-		return
-	}
-	ur := gateways.NewUserRepository(db)
-	u := &entities.User{
-		ID:      "sdsdsd",
-		Address: "sdf",
-		PubKey:  []byte("pubKey"),
-		PrivKey: []byte("privKey"),
-	}
-	user, _ := ur.Create(u)
-	var buf bytes.Buffer
-	testByte := []byte{1}
-	if err := json.NewEncoder(&buf).Encode(&entities.Content{
-		Content:     []byte{1, 2, 3, 4, 5},
-		MetaData:    [][]byte{testByte},
-		HashedData:  [][]byte{testByte},
-		ContentName: "コンテンツ1",
-		SplitCount:  2,
-		Owner:       "sdf",
-		Id:          "sdf",
-		UserId:      user.ID,
-		ContentId:   "sdf",
-	}); err != nil {
-		t.Fatal(err)
-	}
-	req := httptest.NewRequest(http.MethodPost, "/api/content", &buf)
-	rec := httptest.NewRecorder()
-	cc := controllers.LoadContentController(db)
-	cc.Dispatch(rec, req)
-	asserts.AssertEqual(t, http.StatusCreated, rec.Code, rec.Result().Status)
-}
+// 	"github.com/golang/mock/gomock"
+// )
 
-//* 登録済みユーザのuserIdでコンテンツを取得
-func TestGetContent(t *testing.T) {
-	db, err := LoadTestDB()
-	if err != nil {
-		t.Errorf("Failed to get DB: %v", err)
-		return
-	}
-	//* ユーザ作成
-	u := &entities.User{
-		Address: "sdf",
-		PubKey:  []byte("pubKey"),
-		PrivKey: []byte("privKey"),
-	}
-	recCreate := httptest.NewRecorder()
-	uo := presenters.NewUserOutputPort(recCreate)
-	ur := gateways.NewUserRepository(db)
-	ui := interactor.NewUserInputPort(uo, ur)
-	user, err := ui.Create(u)
-	if err != nil {
-		t.Errorf("Failed to Create User: %v", err)
-	}
-	testByte := []byte{1}
-	//* 作成したユーザのIDでコンテンツをアップロード
-	c := &entities.Content{
-		Content:     []byte{},
-		MetaData:    [][]byte{testByte},
-		HashedData:  [][]byte{testByte},
-		ContentName: "",
-		SplitCount:  0,
-		Owner:       "",
-		Id:          "sdf",
-		UserId:      user.ID,
-	}
-	recUpload := httptest.NewRecorder()
-	co := presenters.NewContentOutputPort(recUpload)
-	cr := gateways.NewContentRepository(db)
-	cs := storage.NewContentStorage()
-	cco := contracts.NewContentContracts()
-	ci := interactor.NewContentInputPort(co, cr, cco, cs, ur)
-	content, err := ci.Upload(c)
-	if err != nil {
-		t.Errorf("Failed to Create Content: %v", err)
-	}
-	//*　作成したコンテンツのIDを用いてコンテンツを取得
-	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/contents/%s", content.Id), nil)
-	rec := httptest.NewRecorder()
-	cc := controllers.LoadContentController(db)
-	cc.Dispatch(rec, req)
-	receipt := &entities.Receipt{}
-	err = json.NewDecoder(rec.Body).Decode(&receipt)
-	if err != nil {
-		t.Errorf("Failed to Get Content: %v", err)
-	}
-	asserts.AssertEqual(t, http.StatusOK, rec.Code, rec.Result().Status)
-	asserts.AssertEqual(t, content, receipt, rec.Result().Status)
-}
+// func check(t *testing.T, err error) {
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-//* 存在しないUserIDで作成する -> エラー
-func TestGetContentError(t *testing.T) {
-	db, err := LoadTestDB()
-	if err != nil {
-		t.Errorf("Failed to get DB: %v", err)
-		return
-	}
-	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/contents/%s", "sdfsdf"), nil)
-	rec := httptest.NewRecorder()
-	uc := controllers.LoadUserController(db)
-	uc.Dispatch(rec, req)
-	asserts.AssertEqual(t, http.StatusBadRequest, rec.Code, rec.Result().Status)
-}
+// func TestContentHandler_UploadContent(t *testing.T) { // nolint:gocognit
+// 	t.Parallel()
+
+// 	tests := []struct {
+// 		name     string
+// 		setup    func(mc mock_port.MockContentContract, ms mock_port.MockContentStorage, mr mock_port.MockContentRepository) *entities.Receipt
+// 		body     func() (*bytes.Buffer, string, error)
+// 		wantCode int
+// 		wantErr  bool
+// 	}{
+// 		{
+// 			name: "Success",
+// 			setup: func(mcc mock_port.MockContentContract, mcs mock_port.MockContentStorage, mcr mock_port.MockContentRepository) *entities.Receipt {
+// 				receipt := &entities.Receipt{
+// 					ID:       "",
+// 					Content:  entities.SampleData{},
+// 					MetaData: [][]byte{},
+// 					HashData: [][]byte{},
+// 				}
+// 				mcs.EXPECT().Create(gomock.Any()).AnyTimes().Return(nil, nil)
+// 				mcr.EXPECT().Create(gomock.Any()).AnyTimes().Return(receipt, nil)
+// 				mcc.EXPECT().Register(gomock.Any()).AnyTimes().Return(nil)
+// 				return receipt
+// 			},
+// 			body: func() (*bytes.Buffer, string, error) {
+
+// 				// testByte := []byte{233}
+
+// 				body := &bytes.Buffer{}
+// 				writer := multipart.NewWriter(body)
+
+// 				f, err := core.UseFileRead("./linux_logo.jpg")
+// 				check(t, err)
+// 				part, err := writer.CreateFormFile("content", "./linux_logo.jpg")
+// 				check(t, err)
+// 				if _, err := io.Copy(part, f); err != nil {
+// 					t.Fatal(err)
+// 				}
+
+// 				err = writer.WriteField("user_id", "ssssssss")
+// 				if err != nil {
+// 					t.Fatal(err)
+// 				}
+
+// 				// m1, err := os.Create("/tmp/dat2")
+// 				// check(t, err)
+// 				// _, err = m1.Write(testByte)
+// 				// check(t, err)
+// 				// meta1, err := writer.CreateFormFile("meta_1", "meta1")
+// 				// check(t, err)
+// 				// if _, err := io.Copy(meta1, m1); err != nil {
+// 				// 	t.Fatal(err)
+// 				// }
+
+// 				// m2, err := os.Create("/tmp/dat2")
+// 				// check(t, err)
+// 				// _, err = m1.Write(testByte)
+// 				// check(t, err)
+// 				// meta2, err := writer.CreateFormFile("meta_2", "meta2")
+// 				// check(t, err)
+// 				// if _, err := io.Copy(meta2, m2); err != nil {
+// 				// 	t.Fatal(err)
+// 				// }
+
+// 				// m3, err := os.Create("/tmp/dat2")
+// 				// check(t, err)
+// 				// _, err = m3.Write(testByte)
+// 				// check(t, err)
+// 				// meta3, err := writer.CreateFormFile("meta_3", "meta3")
+// 				// check(t, err)
+// 				// if _, err := io.Copy(meta3, m3); err != nil {
+// 				// 	t.Fatal(err)
+// 				// }
+
+// 				// m4, err := os.Create("/tmp/dat2")
+// 				// check(t, err)
+// 				// _, err = m4.Write(testByte)
+// 				// check(t, err)
+// 				// meta4, err := writer.CreateFormFile("meta_4", "meta4")
+// 				// check(t, err)
+// 				// if _, err := io.Copy(meta4, m4); err != nil {
+// 				// 	t.Fatal(err)
+// 				// }
+
+// 				// m5, err := os.Create("/tmp/dat2")
+// 				// check(t, err)
+// 				// _, err = m5.Write(testByte)
+// 				// check(t, err)
+// 				// meta5, err := writer.CreateFormFile("meta_5", "meta5")
+// 				// check(t, err)
+// 				// if _, err := io.Copy(meta5, m5); err != nil {
+// 				// 	t.Fatal(err)
+// 				// }
+
+// 				err = writer.Close()
+// 				check(t, err)
+// 				header := writer.FormDataContentType()
+// 				return body, header, nil
+// 			},
+// 			wantCode: 201,
+// 			wantErr:  false,
+// 		},
+// 	}
+
+// 	for _, tt := range tests {
+// 		tt := tt
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			t.Parallel()
+// 			body, header, err := tt.body()
+// 			if err != nil {
+// 				t.Fatal(err)
+// 			}
+
+// 			db, err := router.LoadTestDB()
+// 			if err != nil {
+// 				t.Fatal(err)
+// 			}
+
+// 			req := httptest.NewRequest(http.MethodPost, "/api/content", body)
+// 			req.Header.Set("Content-Type", header)
+
+// 			rec := httptest.NewRecorder()
+// 			cc := controllers.LoadContentController(db)
+// 			cc.Post(rec, req)
+// 			asserts.AssertEqual(t, http.StatusCreated, rec.Code, rec.Body.String()+rec.Result().Status)
+// 		})
+// 	}
+// }

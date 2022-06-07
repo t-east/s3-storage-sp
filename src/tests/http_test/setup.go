@@ -13,7 +13,6 @@ func LoadTestDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Receipt{})
 	return db, nil
 }

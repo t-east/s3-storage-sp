@@ -1,7 +1,6 @@
 package interactor
 
 import (
-	"sp/src/core"
 	entities "sp/src/domains/entities"
 	port "sp/src/usecases/port"
 )
@@ -10,42 +9,51 @@ type ContentHandler struct {
 	Repository      port.ContentRepository
 	ContentContract port.ContentContract
 	ContentStorage  port.ContentStorage
-	UserRepo        port.UserRepository
 }
 
-func NewContentInputPort(repository port.ContentRepository, contract port.ContentContract, storage port.ContentStorage, userRepo port.UserRepository) port.ContentInputPort {
+func NewContentInputPort(repository port.ContentRepository, contract port.ContentContract, storage port.ContentStorage) port.ContentInputPort {
 	return &ContentHandler{
 		Repository:      repository,
 		ContentContract: contract,
 		ContentStorage:  storage,
-		UserRepo:        userRepo,
 	}
 }
 
-func (c *ContentHandler) Upload(contentInput *entities.Content) (*entities.Receipt, error) {
-	//* ブロックチェーンに登録
-	err := c.ContentContract.Register(contentInput)
-	if err != nil {
-		return nil, err
+func (c *ContentHandler) Upload(ci *entities.ContentIn, param *entities.Param) (*entities.Receipt, error) {
+	content := &entities.Content{
+		Address:  ci.Address,
+		Content:  ci.Content,
+		MetaData: ci.MetaData,
 	}
-	//* 登録済みユーザかを確認する．
-	// _, err = c.UserRepo.FindByID(contentInput.UserId)
+	//* ID付与
+	content.ID = "urn:ngsi-ld:Sample:unit001"
+	// //* コンテンツからからハッシュ値を生成
+	// hash, err := core.HashGen(param, content.Content)
 	// if err != nil {
 	// 	return nil, err
 	// }
-	//* ulidを作成
-	contentInput.Id = core.MakeULID()
-	//* コンテンツをストレージに保存
-	_, err = c.ContentStorage.Create(contentInput)
+	content.HashData = []string{"s", "s", "s"}
+	// //* FIWAREに保存
+	receipt, err := c.Repository.Create(content)
 	if err != nil {
 		return nil, err
 	}
-	//* データベースに保存
-	receipt, err := c.Repository.Create(contentInput)
+	// //* ブロックチェーンに登録
+	// err = c.ContentContract.Set(content)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// cl, err := c.ContentContract.Get(content.ID)
 	if err != nil {
 		return nil, err
 	}
-	return receipt, nil
+	result := &entities.Receipt{
+		ID:       content.ID,
+		Content:  receipt.Content,
+		MetaData: receipt.MetaData,
+		HashData: receipt.HashData,
+	}
+	return result, nil
 }
 
 func (c *ContentHandler) FindByID(id string) {

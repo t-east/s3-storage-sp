@@ -18,27 +18,21 @@ type ContentStorage struct {
 func NewContentStorage() port.ContentStorage {
 	return &ContentStorage{}
 }
-func (pr *ContentStorage) Create(c *entities.Content) (*entities.Content, error) {
-	storagePath := "storage/" + c.Id + "/content"
+func (pr *ContentStorage) Upload(c *entities.Content) (*entities.Content, error) {
+	storagePath := "storage/" +  "/content"
 	WriteBinaryFile(storagePath, binary.BigEndian, c.Content)
-	for i:=0; i<c.SplitCount; i++ {
-		storagePath := "storage/" + c.Id + fmt.Sprint(i)
-		WriteBinaryFile(storagePath, binary.BigEndian, c.MetaData[i])
+	for i := 0; i < 5; i++ {
+		metaPath := "storage/" + "/"
+		WriteBinaryFile(metaPath, binary.BigEndian, c.MetaData[i])
 	}
 	return c, nil
 }
 
 func (pr *ContentStorage) Get(id string) (*entities.Content, error) {
 	return &entities.Content{
-		Content:     []byte{},
-		MetaData:    [][]byte{},
-		HashedData:  [][]byte{},
-		ContentName: "",
-		SplitCount:  0,
-		Owner:       "",
-		Id:          id,
-		UserId:      id,
-		ContentId:   id,
+		Address:  "",
+		Content:  entities.SampleData{},
+		MetaData: [][]byte{},
 	}, nil
 }
 

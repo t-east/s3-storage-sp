@@ -6,7 +6,8 @@
 #
 version: '3'
 networks:
-  basic:
+  pbc_network:
+    external: true
 
 services:
   app:
@@ -21,7 +22,7 @@ services:
     ports:
       - 4001:4001
     networks:
-      - basic
+      - pbc_network
     # command: >
     #   ash -c "air"
 

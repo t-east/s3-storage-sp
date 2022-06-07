@@ -3,7 +3,7 @@ package router
 import (
 	// "database/sql"
 	// "fmt"
-	"encoding/json"
+
 	"fmt"
 	"log"
 	"net/http"
@@ -42,8 +42,6 @@ func LoadTestDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&entities.User{})
-	db.AutoMigrate(&entities.Receipt{})
 	return db, nil
 }
 
@@ -70,9 +68,13 @@ func allowOptionsMiddleware(w http.ResponseWriter, r *http.Request) error {
 func ServerHandlerPublic(w http.ResponseWriter, r *http.Request) {
 	db, err := LoadTestDB()
 	if err != nil {
-		log.Fatalf("Can't get DB. %+v", err)
+		log.Print(err)
 	}
-	param := CreateParam()
+	// param, err := ethereum.GetParam()
+	// if err != nil {
+	// 	log.Print(err)
+	// }
+	param := &entities.Param{}
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
@@ -82,18 +84,8 @@ func ServerHandlerPublic(w http.ResponseWriter, r *http.Request) {
 	head, r.URL.Path = core.ShiftPath(r.URL.Path)
 	switch head {
 	case "content":
-		uc := controllers.LoadContentController(db)
+		uc := controllers.LoadContentController(db, param)
 		uc.Dispatch(w, r)
-	// TODO:　廃止される
-	case "param":
-		res, err := json.Marshal(param)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(200)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(res)
 	default:
 		http.Error(w, fmt.Sprintf("method not allowed request. req: %v", r.URL), http.StatusNotFound)
 	}

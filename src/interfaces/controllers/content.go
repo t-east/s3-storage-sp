@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"sp/src/core"
 	"sp/src/domains/entities"
+	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/gateways"
 	"sp/src/interfaces/storage"
-	"sp/src/mocks"
 	"sp/src/usecases/interactor"
 	"sp/src/usecases/port"
 
@@ -26,31 +26,42 @@ type ContentController struct {
 		u port.ContentRepository,
 		co port.ContentContract,
 	) port.ContentInputPort
-	Conn *gorm.DB
+	Conn  *gorm.DB
+	Param *entities.Param
 }
 
-func LoadContentController(db *gorm.DB) *ContentController {
-	return &ContentController{Conn: db}
+func LoadContentController(db *gorm.DB, param *entities.Param) *ContentController {
+	return &ContentController{Conn: db, Param: param}
 }
 
 func (cc *ContentController) Post(w http.ResponseWriter, r *http.Request) {
-	content := &entities.Content{}
+	content := &entities.ContentIn{}
 	err := json.NewDecoder(r.Body).Decode(&content)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	repository := gateways.NewContentRepository(cc.Conn)
-	contract := mocks.NewContentContractMock()
+	contract := contracts.NewContentContracts()
 	storage := storage.NewContentStorage()
-	userRepo := gateways.NewUserRepository(cc.Conn)
 	inputPort := interactor.NewContentInputPort(
 		repository,
 		contract,
 		storage,
-		userRepo,
 	)
-	inputPort.Upload(content)
+	receipt, err := inputPort.Upload(content, cc.Param)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	res, err := json.Marshal(receipt)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(201)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
 }
 
 func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
@@ -58,14 +69,12 @@ func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
 	_, tail = core.ShiftPath(tail)
 	id, _ := core.ShiftPath(tail)
 	repository := gateways.NewContentRepository(cc.Conn)
-	contract := mocks.NewContentContractMock()
+	contract := contracts.NewContentContracts()
 	storage := storage.NewContentStorage()
-	userRepo := gateways.NewUserRepository(cc.Conn)
 	inputPort := interactor.NewContentInputPort(
 		repository,
 		contract,
 		storage,
-		userRepo,
 	)
 	inputPort.FindByID(id)
 }

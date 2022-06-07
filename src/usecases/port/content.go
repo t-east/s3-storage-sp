@@ -5,21 +5,23 @@ import (
 )
 
 type ContentInputPort interface {
-	Upload(content *entities.Content) (*entities.Receipt, error)
+	Upload(content *entities.ContentIn, param *entities.Param) (*entities.Receipt, error)
 	FindByID(id string)
 }
 
 type ContentRepository interface {
-	Create(user *entities.Content) (*entities.Receipt, error)
-	Find(id string) (*entities.Receipt, error)
+	Create(user *entities.Content) (*entities.Content, error)
+	Find(id string) (*entities.Content, error)
+	All() ([]*entities.Content, error)
 }
 
 type ContentContract interface {
-	Register( content *entities.Content ) error
+	Set( content *entities.Content ) error
+	Get( id string ) (*entities.ContentLog, error )
 }
 
 type ContentStorage interface {
-	Create( content *entities.Content) (*entities.Content ,error)
+	Upload( content *entities.Content) (*entities.Content ,error)
 	Get(id string) (*entities.Content ,error)
 	GetPreSignedURL(key string) (string, error)
 }

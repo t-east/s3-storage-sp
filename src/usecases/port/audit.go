@@ -5,7 +5,7 @@ import (
 )
 
 type AuditInputPort interface {
-	Challen() (*entities.Proofs, error)
+	ProofGen() (*entities.Proofs, error)
 }
 
 type AuditRepository interface {

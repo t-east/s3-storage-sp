@@ -1,13 +1,16 @@
 package core
 
 import (
+	"bytes"
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/binary"
+	"encoding/gob"
 	"encoding/hex"
 	"fmt"
 	"math/big"
 	"os"
+	"sp/src/domains/entities"
 
 	"github.com/Nik-U/pbc"
 )
@@ -56,29 +59,8 @@ func ReadBinaryFile(filename string, order binary.ByteOrder) []byte {
 	return b
 }
 
-func UseFileRead(fileName string) ([]byte, error) {
-	fp, err := os.Open(fileName)
-	if err != nil {
-		return nil, err
-	}
-	defer fp.Close()
-
-	buf := make([]byte, 64)
-	for {
-		n, err := fp.Read(buf)
-		if n == 0 {
-			break
-		}
-		if err != nil {
-			panic(err)
-		}
-	}
-	return buf, nil
-
-}
-
-func HashChallen(n int, c int, k1, k2 []byte, pairing *pbc.Pairing) ([]int, []*pbc.Element) {
-
+func HashChallen(c int, k1, k2 []byte, pairing *pbc.Pairing) ([]int, []*pbc.Element) {
+	n := 5
 	k1Big := new(big.Int).SetBytes(k1)
 	k2Big := new(big.Int).SetBytes(k2)
 	nBig := big.NewInt(int64(n))
@@ -100,4 +82,58 @@ func HashChallen(n int, c int, k1, k2 []byte, pairing *pbc.Pairing) ([]int, []*p
 func GetBinaryBySHA256(s string) []byte {
 	r := sha256.Sum256([]byte(s))
 	return r[:]
+}
+
+func UseFileRead(fileName string) (*os.File, error) {
+	fp, err := os.Open(fileName)
+	if err != nil {
+		return &os.File{}, err
+	}
+	return fp, nil
+
+}
+
+func HashGen(param *entities.Param, content entities.SampleData) ([]string, error) {
+	pairing, err := pbc.NewPairingFromString(param.Pairing)
+	if err != nil {
+		return nil, err
+	}
+	splitCount := 3
+	var cb bytes.Buffer        // Stand-in for a network connection
+	enc := gob.NewEncoder(&cb) // Will write to network.
+	err = enc.Encode(content)
+	if err != nil {
+		return nil, err
+	}
+	contentByte := cb.Bytes()
+	splitedFile, err := SplitSlice(contentByte, splitCount)
+	if err != nil {
+		return nil, err
+	}
+	var hashData []string
+	for i := 0; i < len(splitedFile); i++ {
+		m := pairing.NewG1().SetFromHash(splitedFile[i])
+		mm := m.X().String()
+		hashData = append(hashData, mm)
+	}
+	return hashData, nil
+}
+
+func CreateParamMock() (*entities.Param, *entities.Key, error) {
+	params := pbc.GenerateA(uint32(160), uint32(512))
+	pairing := params.NewPairing()
+	g := pairing.NewG1().Rand()
+	u := pairing.NewG1().Rand()
+	privKey := pairing.NewZr().Rand()
+	pubKey := pairing.NewG1().MulZn(g, privKey)
+	p := &entities.Param{
+		Pairing: params.String(),
+		G:       g.Bytes(),
+		U:       u.Bytes(),
+	}
+	k := &entities.Key{
+		PubKey:  pubKey.Bytes(),
+		PrivKey: privKey.Bytes(),
+	}
+	return p, k, nil
 }
