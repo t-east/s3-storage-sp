@@ -11,6 +11,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/joho/godotenv v1.4.0
 	github.com/oklog/ulid v1.3.1
+	github.com/oklog/ulid/v2 v2.0.2 // indirect
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401 // indirect
 	gorm.io/driver/mysql v1.3.2

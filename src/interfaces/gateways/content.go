@@ -5,6 +5,7 @@ import (
 	"log"
 	"sp/src/domains/entities"
 	fiware "sp/src/drivers/ngsi"
+	"sp/src/drivers/ulid"
 	"sp/src/usecases/port"
 
 	"gorm.io/gorm"
@@ -40,9 +41,7 @@ func (ur *ContentRepository) Find(id string) (*entities.Content, error) {
 	return content, nil
 }
 
-func (ur *ContentRepository) All() ([]*entities.Content, error) {
-	var contents []*entities.Content
-	err := ur.Conn.Find(contents).Error
+	id := ulid.GenerateIdentifier()
 	if err != nil {
 		return nil, err
 	}

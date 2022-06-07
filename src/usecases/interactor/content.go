@@ -25,8 +25,6 @@ func (c *ContentHandler) Upload(ci *entities.ContentIn, param *entities.Param) (
 		Content:  ci.Content,
 		MetaData: ci.MetaData,
 	}
-	//* ID付与
-	content.ID = "urn:ngsi-ld:Sample:unit001"
 	// //* コンテンツからからハッシュ値を生成
 	// hash, err := core.HashGen(param, content.Content)
 	// if err != nil {
@@ -48,7 +46,7 @@ func (c *ContentHandler) Upload(ci *entities.ContentIn, param *entities.Param) (
 		return nil, err
 	}
 	result := &entities.Receipt{
-		ID:       content.ID,
+		ID:       receipt.ID,
 		Content:  receipt.Content,
 		MetaData: receipt.MetaData,
 		HashData: receipt.HashData,
