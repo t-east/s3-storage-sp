@@ -8,10 +8,34 @@
  */
 package swagger
 
-type CreateEntityRequest struct {
-	Type_ string `json:"type"`
-	Id string `json:"id"`
+type StringValue struct {
+	Value string `json:"value"`
+	Type  string `json:"type"`
 }
+
+type LocationValue struct {
+	Value string `json:"value"`
+	Type  string `json:"type"`
+}
+
+type CreateEntityRequest struct {
+	Type_       string       `json:"type"`
+	Id          string       `json:"id"`
+	Temperature *StringValue `json:"temperature"`
+}
+
+// "humidity": {
+//     "value": 60
+//   },
+//   "location": {
+//     "value": "41.3763726, 2.1864475",
+//     "type": "geo:point",
+//     "metadata": {
+//       "crs": {
+//         "value": "WGS84"
+//       }
+//     }
+//   }
 
 // type CreateEntityRequest struct {
 // 	Type_ string `json:"type"`

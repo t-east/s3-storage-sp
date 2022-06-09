@@ -62,6 +62,15 @@ func (c *ContentHandler) FindByID(id string) {
 	}
 }
 
+func (c *ContentHandler) FindAll() ([]*entities.Receipt, error) {
+	//* content情報を取得
+	receipts, err := c.Repository.All()
+	if err != nil {
+		return nil, err
+	}
+	return receipts, nil
+}
+
 // TODO keyを使ってファイルのurlを取得する実装
 func (c *ContentHandler) GetFileByID(key string) string {
 	//* 署名付きurlを返す

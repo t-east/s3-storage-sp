@@ -43,6 +43,7 @@ type Receipt struct {
 	Content  SampleData `json:"content"`
 	MetaData [][]byte   `json:"metadata"`
 	HashData []string   `json:"hashdata"`
+	Str      string     `json:"str"`
 }
 
 func NewContent() *ContentIn {

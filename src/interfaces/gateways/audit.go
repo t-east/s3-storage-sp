@@ -21,10 +21,8 @@ type proofRepository struct {
 	ProofSQLHandler
 }
 
-func NewProofRepository(conn *gorm.DB) port.AuditRepository {
-	return &proofRepository{
-		Conn: conn,
-	}
+func NewProofRepository() port.AuditRepository {
+	return &proofRepository{}
 }
 
 func (pr *proofRepository) Create(u *entities.Proof) (*entities.Proof, error) {

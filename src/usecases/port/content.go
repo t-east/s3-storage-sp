@@ -7,12 +7,13 @@ import (
 type ContentInputPort interface {
 	Upload(content *entities.ContentIn, param *entities.Param) (*entities.Receipt, error)
 	FindByID(id string)
+	FindAll() ([]*entities.Receipt, error)
 }
 
 type ContentRepository interface {
 	Create(user *entities.Content) (*entities.Content, error)
 	Find(id string) (*entities.Content, error)
-	All() ([]*entities.Content, error)
+	All() ([]*entities.Receipt, error)
 }
 
 type ContentContract interface {

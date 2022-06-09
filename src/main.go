@@ -1,19 +1,19 @@
 package main
 
 import (
-	"log"
-
-	router "sp/src/drivers/router"
-
-	"github.com/joho/godotenv"
+	"sp/src/domains/entities"
+	"sp/src/drivers/router"
+	"sp/src/interfaces/controllers"
 )
 
-func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(".env not found")
-	}
+func realMain() {
+	cc := *controllers.LoadContentController(&entities.Param{})
+	ac := *controllers.LoadAuditController(&entities.Param{})
 
-	log.Println("Server running...")
-	router.Serve()
+	e := router.NewServer(cc, ac)
+	e.Logger.Fatal(e.Start(":4001"))
+}
+
+func main() {
+	realMain()
 }

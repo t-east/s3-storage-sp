@@ -16,7 +16,7 @@ import (
 
 type AuditController struct {
 	// -> gateway.NewAuditRepository
-	RepoFactory func(c *gorm.DB) port.AuditRepository
+	RepoFactory func() port.AuditRepository
 	// -> contracts.NewAuditContracts
 	ContractFactory func() port.AuditContract
 	// -> crypt.NewAuditCrypt
@@ -31,13 +31,13 @@ type AuditController struct {
 	Param *entities.Param
 }
 
-func LoadAuditController(db *gorm.DB, param *entities.Param) *AuditController {
-	return &AuditController{Conn: db, Param: param}
+func LoadAuditController(param *entities.Param) *AuditController {
+	return &AuditController{Param: param}
 }
 
 func (ac *AuditController) Post(w http.ResponseWriter, r *http.Request) {
-	repository := gateways.NewProofRepository(ac.Conn)
-	contentRepo := gateways.NewContentRepository(ac.Conn)
+	repository := gateways.NewProofRepository()
+	contentRepo := gateways.NewContentRepository()
 	contract := contracts.NewAuditContracts()
 	crypt := crypt.NewAuditCrypt(ac.Param)
 	storage := storage.NewContentStorage()
