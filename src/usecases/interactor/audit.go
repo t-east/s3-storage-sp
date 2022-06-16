@@ -16,14 +16,12 @@ type AuditHandler struct {
 func NewAuditInputPort(
 	contract port.AuditContract,
 	crypt port.AuditCrypt,
-	storage port.ContentStorage,
 	repository port.AuditRepository,
 	c_repo port.ContentRepository,
 ) port.AuditInputPort {
 	return &AuditHandler{
 		AuditContract:     contract,
 		AuditCrypt:        crypt,
-		ContentStorage:    storage,
 		AuditRepository:   repository,
 		ContentRepository: c_repo,
 	}

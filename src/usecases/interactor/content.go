@@ -11,11 +11,10 @@ type ContentHandler struct {
 	ContentStorage  port.ContentStorage
 }
 
-func NewContentInputPort(repository port.ContentRepository, contract port.ContentContract, storage port.ContentStorage) port.ContentInputPort {
+func NewContentInputPort(repository port.ContentRepository, contract port.ContentContract) port.ContentInputPort {
 	return &ContentHandler{
 		Repository:      repository,
 		ContentContract: contract,
-		ContentStorage:  storage,
 	}
 }
 

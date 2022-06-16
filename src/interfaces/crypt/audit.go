@@ -51,7 +51,7 @@ func (pr *auditCrypt) AuditProofGen(
 		return nil, fmt.Errorf("challengeの形が良くない")
 	}
 	for cIndex := 0; cIndex < int(chal.C); cIndex++ {
-		meta := pairing.NewG1().SetBytes(content.MetaData[aTable[cIndex]])
+		meta := pairing.NewG1().SetBytes([]byte(content.MetaData[aTable[cIndex]]))
 		m := pairing.NewG1().SetFromHash(splitedFile[aTable[cIndex]])
 		mm := core.GetBinaryBySHA256(m.X().String())
 		M := pairing.NewG1().SetBytes(mm)
@@ -132,7 +132,7 @@ func AuditVerify(params *entities.Param, pubKeyByte []byte, content *entities.Co
 	gammaT := pairing.NewG1().SetBytes(proof.Gamma)
 	var MSum *pbc.Element
 	for c := 0; c < chal.C; c++ {
-		M := pairing.NewG1().SetBytes(content.MetaData[aTable[c]])
+		M := pairing.NewG1().SetBytes([]byte(content.MetaData[aTable[c]]))
 		if c == 0 {
 			MSum = pairing.NewG1().PowZn(M, vTable[c])
 		} else {

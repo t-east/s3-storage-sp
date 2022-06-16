@@ -6,7 +6,6 @@ import (
 	"sp/src/domains/entities"
 	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/gateways"
-	"sp/src/interfaces/storage"
 	"sp/src/log"
 	"sp/src/usecases/interactor"
 	"sp/src/usecases/port"
@@ -50,11 +49,9 @@ func (cc *ContentController) Post(c echo.Context) error {
 	}
 	repository := gateways.NewContentRepository()
 	contract := contracts.NewContentContracts()
-	storage := storage.NewContentStorage()
 	inputPort := interactor.NewContentInputPort(
 		repository,
 		contract,
-		storage,
 	)
 	receipt, err := inputPort.Upload(content, cc.Param)
 	if err != nil {
@@ -70,11 +67,9 @@ func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
 	id, _ := core.ShiftPath(tail)
 	repository := gateways.NewContentRepository()
 	contract := contracts.NewContentContracts()
-	storage := storage.NewContentStorage()
 	inputPort := interactor.NewContentInputPort(
 		repository,
 		contract,
-		storage,
 	)
 	inputPort.FindByID(id)
 }
@@ -83,11 +78,9 @@ func (cc *ContentController) FindAll(c echo.Context) error {
 	logger, err := log.NewLogger()
 	repository := gateways.NewContentRepository()
 	contract := contracts.NewContentContracts()
-	storage := storage.NewContentStorage()
 	inputPort := interactor.NewContentInputPort(
 		repository,
 		contract,
-		storage,
 	)
 	receipts, err := inputPort.FindAll()
 	if err != nil {

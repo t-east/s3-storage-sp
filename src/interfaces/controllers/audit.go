@@ -7,7 +7,6 @@ import (
 	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/crypt"
 	"sp/src/interfaces/gateways"
-	"sp/src/interfaces/storage"
 	"sp/src/usecases/interactor"
 	"sp/src/usecases/port"
 
@@ -40,8 +39,7 @@ func (ac *AuditController) Post(w http.ResponseWriter, r *http.Request) {
 	contentRepo := gateways.NewContentRepository()
 	contract := contracts.NewAuditContracts()
 	crypt := crypt.NewAuditCrypt(ac.Param)
-	storage := storage.NewContentStorage()
-	inputPort := interactor.NewAuditInputPort(contract, crypt, storage, repository, contentRepo)
+	inputPort := interactor.NewAuditInputPort(contract, crypt, repository, contentRepo)
 	proofs, err := inputPort.ProofGen()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
