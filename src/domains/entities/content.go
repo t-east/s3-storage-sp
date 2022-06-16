@@ -1,21 +1,20 @@
 package entities
 
-type SampleData struct {
-	Name     string `json:"name"`
-	Length   int    `json:"length"`
-	Location int    `json:"location"`
+type Point struct {
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 type ContentIn struct {
-	Address  string     `json:"address"`
-	Content  SampleData `json:"content"`
-	MetaData [][]byte   `json:"meta_data"`
+	Address  string   `json:"address"`
+	Content  Point    `json:"content"`
+	MetaData []string `json:"meta_data"`
 }
 
 type ContentInDB struct {
-	ID       string     `json:"id"`
-	Content  SampleData `json:"content"`
-	MetaData [][]byte   `json:"metadata"`
+	ID       string   `json:"id"`
+	Content  Point    `json:"content"`
+	MetaData [][]byte `json:"metadata"`
 }
 
 type MetaDataInDB struct {
@@ -25,11 +24,11 @@ type MetaDataInDB struct {
 }
 
 type Content struct {
-	ID       string     `json:"id"`
-	Address  string     `json:"address"`
-	Content  SampleData `json:"content"`
-	MetaData [][]byte   `json:"metadata"`
-	HashData []string   `json:"hashdata"`
+	ID       string   `json:"id"`
+	Address  string   `json:"address"`
+	Content  Point    `json:"content"`
+	MetaData []string `json:"metadata"`
+	HashData []string `json:"hashdata"`
 }
 
 type ContentLog struct {
@@ -39,11 +38,11 @@ type ContentLog struct {
 }
 
 type Receipt struct {
-	ID       string     `json:"id"`
-	Content  SampleData `json:"content"`
-	MetaData [][]byte   `json:"metadata"`
-	HashData []string   `json:"hashdata"`
-	Str      string     `json:"str"`
+	ID       string   `json:"id"`
+	Content  Point    `json:"content"`
+	MetaData []string `json:"metadata"`
+	HashData []string `json:"hashdata"`
+	Str      string   `json:"str"`
 }
 
 func NewContent() *ContentIn {

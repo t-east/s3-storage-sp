@@ -9,7 +9,8 @@
 package swagger
 
 type ListEntitiesResponse struct {
-	Type_       string      `json:"type"`
-	Id          string      `json:"id"`
-	Temperature StringValue `json:"temperature"`
+	Type_ string          `json:"type"`
+	Id    string          `json:"id"`
+	Point LocationValue   `json:"point"`
+	Meta  MetaStringValue `json:"meta"`
 }

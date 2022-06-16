@@ -93,7 +93,7 @@ func UseFileRead(fileName string) (*os.File, error) {
 
 }
 
-func HashGen(param *entities.Param, content entities.SampleData) ([]string, error) {
+func HashGen(param *entities.Param, content entities.Point) ([]string, error) {
 	pairing, err := pbc.NewPairingFromString(param.Pairing)
 	if err != nil {
 		return nil, err

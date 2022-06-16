@@ -8,20 +8,31 @@
  */
 package swagger
 
-type StringValue struct {
-	Value string `json:"value"`
-	Type  string `json:"type"`
+type LocationValue struct {
+	Value PointValue `json:"value"`
+	Type  string     `json:"type"`
 }
 
-type LocationValue struct {
-	Value string `json:"value"`
+type PointValue struct {
+	Type        string `json:"type"`
+	Coordinates []int  `json:"coordinates"`
+}
+
+type MetaStringValue struct {
 	Type  string `json:"type"`
+	Value string `json:"value"`
+}
+
+type MetaValues struct {
+	Type  string   `json:"type"`
+	Value []string `json:"value"`
 }
 
 type CreateEntityRequest struct {
-	Type_       string       `json:"type"`
-	Id          string       `json:"id"`
-	Temperature *StringValue `json:"temperature"`
+	Type_ string           `json:"type"`
+	Id    string           `json:"id"`
+	Point *LocationValue   `json:"point"`
+	Meta  *MetaStringValue `json:"meta"`
 }
 
 // "humidity": {

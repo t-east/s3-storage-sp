@@ -7,6 +7,7 @@ import (
 	fiware "sp/src/drivers/ngsi"
 	"sp/src/drivers/ulid"
 	"sp/src/usecases/port"
+	"strings"
 )
 
 type ContentRepository struct {
@@ -21,21 +22,30 @@ func (ur *ContentRepository) Find(id string) (*entities.Content, error) {
 	return content, nil
 }
 
-type InterValue struct {
-	Value string `json:"value"`
-	Type  string `json:"type"`
-}
-
 func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Content, err error) {
 	id := ulid.GenerateIdentifier()
-	h := fiware.StringValue{
-		Value: "12",
-		Type:  "string",
+	var metaStr string
+	for i := 0; i < len(c.MetaData); i++ {
+		if i != 0 {
+			metaStr += ",,,,"
+		}
+		metaStr += strings.Replace(c.MetaData[i], "=", "", -1)
+		log.Print(metaStr)
 	}
 	content := fiware.CreateEntityRequest{
-		Type_:       "Tos",
-		Id:          id.Value(),
-		Temperature: &h,
+		Type_: "Azm",
+		Id:    id.Value(),
+		Point: &fiware.LocationValue{
+			Value: fiware.PointValue{
+				Type:        "Point",
+				Coordinates: []int{c.Content.X, c.Content.Y},
+			},
+			Type: "geo:json",
+		},
+		Meta: &fiware.MetaStringValue{
+			Type:  "Text",
+			Value: metaStr,
+		},
 	}
 	cfg := fiware.NewConfiguration()
 	client := fiware.NewAPIClient(cfg)
@@ -49,7 +59,7 @@ func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Cont
 	return &entities.Content{
 		ID:       id.Value(),
 		Address:  c.Address,
-		Content:  entities.SampleData{},
+		Content:  c.Content,
 		MetaData: c.MetaData,
 		HashData: c.HashData,
 	}, nil
@@ -64,14 +74,30 @@ func (ur *ContentRepository) All() (receipt []*entities.Receipt, err error) {
 	if err != nil {
 		return nil, err
 	}
+
 	var receipts []*entities.Receipt
 	for i := 0; i < len(list); i++ {
+		// var metas []string
+		// for j:=0;i<len(list[i].Metas.Value);i++ {
+		// 	metas = append(metas, list[i].Metas.Value[j].Value)
+		// }
+		metaList := strings.Split(list[i].Meta.Value, ",,,,")
+		log.Print(list[i].Meta.Value)
+		var metaListReplaced []string
+		for j := 0; j < len(metaList); j++ {
+			log.Print(metaList[j])
+			m := metaList[j]+"="
+			metaListReplaced = append(metaListReplaced, m)
+		}
+		pointList := list[i].Point.Value.Coordinates
 		receipt := &entities.Receipt{
-			ID:       list[i].Id,
-			Content:  entities.SampleData{},
-			MetaData: [][]byte{},
+			ID: list[i].Id,
+			Content: entities.Point{
+				X: pointList[0],
+				Y: pointList[1],
+			},
+			MetaData: metaListReplaced,
 			HashData: []string{},
-			Str:      list[i].Temperature.Value,
 		}
 		receipts = append(receipts, receipt)
 	}
