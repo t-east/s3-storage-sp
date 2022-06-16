@@ -1,7 +1,7 @@
 FROM golang:1.16.7-alpine
 
 ENV ROOT=/app
-WORKDIR ${ROOT}
+WORKDIR ${ROOT}/src
 
 RUN apk update && apk add --update git gcc build-base flex bison binutils-gold curl g++ gnupg libgcc linux-headers make && apk add --upgrade gmp-dev
 ENV PBC_VERSION 0.5.14
