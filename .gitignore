@@ -11,3 +11,6 @@ src/storage/*
 src/tests/http_test/storage/*
 src/tests/usecases_test/storage/*
 src/tests/interfaces_test/storage/*
+
+# nginxのファイル
+src/tmp
