@@ -14,3 +14,5 @@ src/tests/interfaces_test/storage/*
 
 # nginxのファイル
 src/tmp
+
+go_pbc.tar
