@@ -20,12 +20,9 @@ import (
 )
 
 func ConnectContentNetWork() (*content.Contracts, *ethclient.Client) {
-	err := godotenv.Load(fmt.Sprintf("./%s.env", os.Getenv("GO_ENV")))
-	if err != nil {
-		log.Fatal("get-go-env-error")
-	}
 	contractAddress := os.Getenv("CONTENT_ADDRESS")
-	client, err := ethclient.Dial("http://gana:8545")
+	ganaHost := os.Getenv("GANA_HOST")
+	client, err := ethclient.Dial(ganaHost)
 	if err != nil {
 		panic(err)
 	}
@@ -37,12 +34,9 @@ func ConnectContentNetWork() (*content.Contracts, *ethclient.Client) {
 }
 
 func ConnectParamNetWork() (*param.Contracts, *ethclient.Client) {
-	err := godotenv.Load(fmt.Sprintf("./%s.env", os.Getenv("GO_ENV")))
-	if err != nil {
-		log.Fatal("get-go-env-error")
-	}
 	contractAddress := os.Getenv("PARAM_ADDRESS")
-	client, err := ethclient.Dial("http://gana:8545")
+	ganaHost := os.Getenv("GANA_HOST")
+	client, err := ethclient.Dial(ganaHost)
 	if err != nil {
 		panic(err)
 	}
@@ -54,11 +48,6 @@ func ConnectParamNetWork() (*param.Contracts, *ethclient.Client) {
 }
 
 func GetUserAddress(privKey string) common.Address {
-	fmt.Println(privKey)
-	err := godotenv.Load(fmt.Sprintf("./%s.env", os.Getenv("GO_ENV")))
-	if err != nil {
-		log.Fatal("go_env-error")
-	}
 	userPrivKeyStr := os.Getenv("SP_PRIVATE_KEY")
 	privateKey, err := crypto.HexToECDSA(userPrivKeyStr)
 	if err != nil {

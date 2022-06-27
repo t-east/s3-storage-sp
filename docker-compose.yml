@@ -13,6 +13,7 @@ services:
   app:
     container_name: sp
     image: go_pbc
+    env_file: .env
     tty: true
     volumes:
       - .:/app
@@ -23,18 +24,18 @@ services:
     command: >
       ash -c "air"
 
-  nginx:
-      container_name: nginx
-      build: ./nginx
-      volumes:
-          - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      ports:
-          - 80:80
-      restart: always
-      depends_on:
-          - app
-      networks:
-          - pbc_network
+  # nginx:
+  #     container_name: nginx
+  #     build: ./nginx
+  #     volumes:
+  #         - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #     ports:
+  #         - 80:80
+  #     restart: always
+  #     depends_on:
+  #         - app
+  #     networks:
+  #         - pbc_network
 
   orion:
     labels:
