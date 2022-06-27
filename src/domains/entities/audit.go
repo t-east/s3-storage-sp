@@ -1,20 +1,20 @@
 package entities
 
 type ArtLog struct {
-	HashedData [][]byte `json:"hashed_data"`
+	HashedData []string `json:"hashed_data"`
 	Owner      string   `json:"owner"`
 }
 
 type Chal struct {
 	ContentId string `json:"art_id"`
 	C         int    `json:"ck"`
-	K1        []byte `json:"k1"`
-	K2        []byte `json:"k2"`
+	K1        string `json:"k1"`
+	K2        string `json:"k2"`
 }
 
 type Proof struct {
-	Myu       []byte `json:"myu"`
-	Gamma     []byte `json:"gamma"`
+	Myu       string `json:"myu"`
+	Gamma     string `json:"gamma"`
 	ContentId string `json:"content_id"`
 }
 

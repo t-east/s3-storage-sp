@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
+	"math/rand"
 	"sp/src/core"
 	"sp/src/domains/entities"
 	"sp/src/usecases/port"
@@ -12,17 +13,17 @@ import (
 	"github.com/Nik-U/pbc"
 )
 
-type auditCrypt struct {
+type AuditCrypt struct {
 	Param *entities.Param
 }
 
 func NewAuditCrypt(param *entities.Param) port.AuditCrypt {
-	return &auditCrypt{
+	return &AuditCrypt{
 		Param: param,
 	}
 }
 
-func (pr *auditCrypt) AuditProofGen(
+func (pr *AuditCrypt) AuditProofGen(
 	chal *entities.Chal,
 	content *entities.Content,
 	contentLog *entities.Content,
@@ -40,12 +41,12 @@ func (pr *auditCrypt) AuditProofGen(
 		log.Fatal("encode error:", err)
 	}
 	contentByte := cb.Bytes()
-	splitedFile, err := core.SplitSlice(contentByte, 5)
+	splitedFile, err := core.SplitSlice(contentByte, 3)
+
 	if err != nil {
 		return nil, err
 	}
-	aTable, vTable := core.HashChallen(int(chal.C), chal.K1, chal.K2, pairing)
-
+	aTable, vTable := core.HashChallen(int(chal.C), []byte(chal.K1), []byte(chal.K2), pairing)
 	var MSum *pbc.Element
 	if chal.C < 1 {
 		return nil, fmt.Errorf("challengeの形が良くない")
@@ -69,70 +70,83 @@ func (pr *auditCrypt) AuditProofGen(
 		}
 	}
 	proof := &entities.Proof{
-		Myu:       myu.Bytes(),
-		Gamma:     gamma.Bytes(),
+		Myu:       string(myu.Bytes()),
+		Gamma:     string(gamma.Bytes()),
 		ContentId: contentLog.ID,
 	}
 	return proof, nil
-
 }
 
+func AuditChallen(para *entities.Param) *entities.Chal {
+	pairing, _ := pbc.NewPairingFromString(para.Pairing)
 
-// func CreateMetaData(uc *entities.Content, user *entities.User, param *entities.Param) (*entities.Content, error) {
-// 	pairing, err := pbc.NewPairingFromString(param.Pairing)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	u := pairing.NewG1().SetBytes(param.U)
-// 	splitedFile, err := core.SplitSlice(uc.Content, uc.SplitCount)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	privKey := pairing.NewZr().SetBytes(user.PrivKey)
+	ck := rand.Intn(2) + 1
+	k1 := pairing.NewZr().Rand()
+	k2 := pairing.NewZr().Rand()
+	return &entities.Chal{
+		ContentId: "",
+		C:         ck,
+		K1:        string(k1.Bytes()),
+		K2:        string(k2.Bytes()),
+	}
+}
 
-// 	// メタデータの作成
-// 	var metaData [][]byte
-// 	var hashData [][]byte
-// 	metaToHash := ""
-// 	for i := 0; i < len(splitedFile); i++ {
-// 		m := pairing.NewG1().SetFromHash(splitedFile[i])
+func MakeMetaData(uc *entities.ContentInForUser, param *entities.Param) (*entities.Content, error) {
+	pairing, err := pbc.NewPairingFromString(param.Pairing)
+	if err != nil {
+		return nil, err
+	}
+	var cb bytes.Buffer        // Stand-in for a network connection
+	enc := gob.NewEncoder(&cb) // Will write to network.
+	err = enc.Encode(uc.Content)
+	if err != nil {
+		log.Fatal("encode error:", err)
+	}
+	contentByte := cb.Bytes()
+	u := pairing.NewG1().SetBytes(param.U)
+	splitCount := 3
+	splitedFile, err := core.SplitSlice(contentByte, splitCount)
 
-// 		mm := core.GetBinaryBySHA256(m.X().String())
-// 		M := pairing.NewG1().SetBytes(mm)
+	if err != nil {
+		return nil, err
+	}
+	privKey := pairing.NewZr().SetBytes([]byte(uc.PrivKey))
 
-// 		um := pairing.NewG1().PowBig(u, m.X())
-// 		temp := pairing.NewG1().Mul(um, M)
-// 		meta := pairing.NewG1().MulZn(temp, privKey)
+	// メタデータの作成
+	var metaData []string
+	var hash []string
+	for i := 0; i < len(splitedFile); i++ {
+		m := pairing.NewG1().SetFromHash(splitedFile[i])
 
-// 		metaData = append(metaData, meta.Bytes())
-// 		metaToHash = metaToHash + meta.String()
-// 		hashData = append(hashData, mm)
-// 	}
+		mm := core.GetBinaryBySHA256(m.X().String())
+		M := pairing.NewG1().SetBytes(mm)
 
-// 	return &entities.Content{
-// 		Content:     uc.Content,
-// 		MetaData:    metaData,
-// 		HashedData:  hashData,
-// 		ContentName: uc.ContentName,
-// 		SplitCount:  uc.SplitCount,
-// 		Owner:       uc.Owner,
-// 		Id:          "",
-// 		UserId:      uc.UserId,
-// 		ContentId:   "",
-// 	}, nil
-// }
+		um := pairing.NewG1().PowBig(u, m.X())
+		temp := pairing.NewG1().Mul(um, M)
+		meta := pairing.NewG1().MulZn(temp, privKey)
 
-func AuditVerify(params *entities.Param, pubKeyByte []byte, content *entities.Content, proof *entities.Proof, chal *entities.Chal) ([]byte, []byte, error) {
+		metaData = append(metaData, string(meta.Bytes()[:]))
+		hash = append(hash, string(mm))
+	}
+
+	return &entities.Content{
+		Content:  uc.Content,
+		MetaData: metaData,
+		HashData: hash,
+	}, nil
+}
+
+func AuditVerify(params *entities.Param, pubKeyStr string, content *entities.Content, proof *entities.Proof, chal *entities.Chal) ([]byte, []byte, error) {
 	pairing, _ := pbc.NewPairingFromString(params.Pairing)
-	aTable, vTable := core.HashChallen(chal.C, chal.K1, chal.K2, pairing)
+	aTable, vTable := core.HashChallen(chal.C, []byte(chal.K1), []byte(chal.K2), pairing)
 	g := pairing.NewG1().SetBytes(params.G)
-	pubKey := pairing.NewG1().SetBytes(pubKeyByte)
+	pubKey := pairing.NewG1().SetBytes([]byte(pubKeyStr))
 	u := pairing.NewG1().SetBytes(params.U)
-	myuT := pairing.NewZr().SetBytes(proof.Myu)
-	gammaT := pairing.NewG1().SetBytes(proof.Gamma)
+	myuT := pairing.NewZr().SetBytes([]byte(proof.Myu))
+	gammaT := pairing.NewG1().SetBytes([]byte(proof.Gamma))
 	var MSum *pbc.Element
 	for c := 0; c < chal.C; c++ {
-		M := pairing.NewG1().SetBytes([]byte(content.MetaData[aTable[c]]))
+		M := pairing.NewG1().SetBytes([]byte(content.HashData[aTable[c]]))
 		if c == 0 {
 			MSum = pairing.NewG1().PowZn(M, vTable[c])
 		} else {

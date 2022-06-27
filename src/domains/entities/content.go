@@ -11,6 +11,12 @@ type ContentIn struct {
 	MetaData []string `json:"meta_data"`
 }
 
+type ContentInForUser struct {
+	Content Point  `json:"content"`
+	PrivKey string `json:"priv_key"`
+	Address string `json:"address"`
+}
+
 type ContentInDB struct {
 	ID       string   `json:"id"`
 	Content  Point    `json:"content"`
@@ -52,13 +58,13 @@ func NewContent() *ContentIn {
 type ContentInStorage struct {
 	Id       string   `json:"id"`
 	File     []byte   `json:"file"`
-	MetaData [][]byte `json:"meta_data"`
+	MetaData []string `json:"meta_data"`
 	FileName string   `json:"name"`
 }
 
 type ContentInBlockChain struct {
-	MetaData   [][]byte `json:"meta_data"`
-	HashedData [][]byte `json:"hashed_data"`
+	MetaData   []string `json:"meta_data"`
+	HashedData []string `json:"hashed_data"`
 	FileName   string   `json:"name"`
 	SplitCount int      `json:"split_count"`
 	Owner      string   `json:"owner"`
@@ -66,6 +72,6 @@ type ContentInBlockChain struct {
 }
 
 type Key struct {
-	PubKey  []byte `json:"pubkey"`
-	PrivKey []byte `json:"privkey"`
+	PubKey  string `json:"pubkey"`
+	PrivKey string `json:"privkey"`
 }
