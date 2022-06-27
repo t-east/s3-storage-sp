@@ -55,12 +55,12 @@ func ReadBinaryFile(filename string, order binary.ByteOrder) []byte {
 	// ファイルから1バイト読み出し
 	//bytesList := make([]byte, fileSize)
 	b := make([]byte, fileSize)
-	file.Read(b)
+	_, _ = file.Read(b)
 	return b
 }
 
 func HashChallen(c int, k1, k2 []byte, pairing *pbc.Pairing) ([]int, []*pbc.Element) {
-	n := 5
+	n := 3
 	k1Big := new(big.Int).SetBytes(k1)
 	k2Big := new(big.Int).SetBytes(k2)
 	nBig := big.NewInt(int64(n))
@@ -132,8 +132,8 @@ func CreateParamMock() (*entities.Param, *entities.Key, error) {
 		U:       u.Bytes(),
 	}
 	k := &entities.Key{
-		PubKey:  pubKey.Bytes(),
-		PrivKey: privKey.Bytes(),
+		PubKey:  string(pubKey.Bytes()),
+		PrivKey: string(privKey.Bytes()),
 	}
 	return p, k, nil
 }
