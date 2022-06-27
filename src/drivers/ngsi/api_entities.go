@@ -365,75 +365,6 @@ type EntitiesApiReplaceAllEntityAttributesOpts struct {
 	Options optional.String
 }
 
-func (a *EntitiesApiService) ReplaceAllEntityAttributes(ctx context.Context, body ReplaceAllEntityAttributesRequest, contentType string, entityId string, localVarOptionals *EntitiesApiReplaceAllEntityAttributesOpts) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Put")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}/attrs"
-	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
-		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
-		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
-	}
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	localVarHeaderParams["Content-Type"] = parameterToString(contentType, "")
-	// body params
-	localVarPostBody = &body
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
 /*
 EntitiesApiService Retrieve Entity
 The response is an object representing the entity identified by the ID. The object follows the JSON entity representation format (described in \&quot;JSON Entity Representation\&quot; section). This operation must return one entity element only, but there may be more than one entity with the same ID (e.g. entities with same ID but different types). In such case, an error message is returned, with the HTTP status code set to 409 Conflict. Response: * Successful operation uses 200 OK * Errors use a non-2xx and (optionally) an error payload. See subsection on \&quot;Error Responses\&quot; for more details.
@@ -454,96 +385,96 @@ type EntitiesApiRetrieveEntityOpts struct {
 	Options  optional.String
 }
 
-func (a *EntitiesApiService) RetrieveEntity(ctx context.Context, entityId string, localVarOptionals *EntitiesApiRetrieveEntityOpts) (RetrieveEntityResponse, *http.Response, error) {
-	var (
-		localVarHttpMethod  = strings.ToUpper("Get")
-		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue RetrieveEntityResponse
-	)
+// func (a *EntitiesApiService) RetrieveEntity(ctx context.Context, entityId string, localVarOptionals *EntitiesApiRetrieveEntityOpts) (RetrieveEntityResponse, *http.Response, error) {
+// 	var (
+// 		localVarHttpMethod  = strings.ToUpper("Get")
+// 		localVarPostBody    interface{}
+// 		localVarFileName    string
+// 		localVarFileBytes   []byte
+// 		localVarReturnValue RetrieveEntityResponse
+// 	)
 
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
+// 	// create path and map variables
+// 	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}"
+// 	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
 
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
+// 	localVarHeaderParams := make(map[string]string)
+// 	localVarQueryParams := url.Values{}
+// 	localVarFormParams := url.Values{}
 
-	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
-		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Attrs.IsSet() {
-		localVarQueryParams.Add("attrs", parameterToString(localVarOptionals.Attrs.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Metadata.IsSet() {
-		localVarQueryParams.Add("metadata", parameterToString(localVarOptionals.Metadata.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
-		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
-	}
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{}
+// 	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
+// 		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
+// 	}
+// 	if localVarOptionals != nil && localVarOptionals.Attrs.IsSet() {
+// 		localVarQueryParams.Add("attrs", parameterToString(localVarOptionals.Attrs.Value(), ""))
+// 	}
+// 	if localVarOptionals != nil && localVarOptionals.Metadata.IsSet() {
+// 		localVarQueryParams.Add("metadata", parameterToString(localVarOptionals.Metadata.Value(), ""))
+// 	}
+// 	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
+// 		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
+// 	}
+// 	// to determine the Content-Type header
+// 	localVarHttpContentTypes := []string{}
 
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
+// 	// set Content-Type header
+// 	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+// 	if localVarHttpContentType != "" {
+// 		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+// 	}
 
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
+// 	// to determine the Accept header
+// 	localVarHttpHeaderAccepts := []string{"application/json"}
 
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
+// 	// set Accept header
+// 	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+// 	if localVarHttpHeaderAccept != "" {
+// 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+// 	}
+// 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+// 	if err != nil {
+// 		return localVarReturnValue, nil, err
+// 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
+// 	localVarHttpResponse, err := a.client.callAPI(r)
+// 	if err != nil || localVarHttpResponse == nil {
+// 		return localVarReturnValue, localVarHttpResponse, err
+// 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
+// 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+// 	localVarHttpResponse.Body.Close()
+// 	if err != nil {
+// 		return localVarReturnValue, localVarHttpResponse, err
+// 	}
 
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		if err == nil {
-			return localVarReturnValue, localVarHttpResponse, err
-		}
-	}
+// 	if localVarHttpResponse.StatusCode < 300 {
+// 		// If we succeed, return the data, otherwise pass on to decode error.
+// 		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+// 		if err == nil {
+// 			return localVarReturnValue, localVarHttpResponse, err
+// 		}
+// 	}
 
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-		if localVarHttpResponse.StatusCode == 200 {
-			var v RetrieveEntityResponse
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
-		}
-		return localVarReturnValue, localVarHttpResponse, newErr
-	}
+// 	if localVarHttpResponse.StatusCode >= 300 {
+// 		newErr := GenericSwaggerError{
+// 			body:  localVarBody,
+// 			error: localVarHttpResponse.Status,
+// 		}
+// 		if localVarHttpResponse.StatusCode == 200 {
+// 			var v RetrieveEntityResponse
+// 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+// 			if err != nil {
+// 				newErr.error = err.Error()
+// 				return localVarReturnValue, localVarHttpResponse, newErr
+// 			}
+// 			newErr.model = v
+// 			return localVarReturnValue, localVarHttpResponse, newErr
+// 		}
+// 		return localVarReturnValue, localVarHttpResponse, newErr
+// 	}
 
-	return localVarReturnValue, localVarHttpResponse, nil
-}
+// 	return localVarReturnValue, localVarHttpResponse, nil
+// }
 
 /*
 EntitiesApiService Retrieve Entity Attributes
@@ -565,267 +496,267 @@ type EntitiesApiRetrieveEntityAttributesOpts struct {
 	Options  optional.String
 }
 
-func (a *EntitiesApiService) RetrieveEntityAttributes(ctx context.Context, entityId string, localVarOptionals *EntitiesApiRetrieveEntityAttributesOpts) (RetrieveEntityAttributesResponse, *http.Response, error) {
-	var (
-		localVarHttpMethod  = strings.ToUpper("Get")
-		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue RetrieveEntityAttributesResponse
-	)
+// func (a *EntitiesApiService) RetrieveEntityAttributes(ctx context.Context, entityId string, localVarOptionals *EntitiesApiRetrieveEntityAttributesOpts) (RetrieveEntityAttributesResponse, *http.Response, error) {
+// 	var (
+// 		localVarHttpMethod  = strings.ToUpper("Get")
+// 		localVarPostBody    interface{}
+// 		localVarFileName    string
+// 		localVarFileBytes   []byte
+// 		localVarReturnValue RetrieveEntityAttributesResponse
+// 	)
 
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}/attrs"
-	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
+// 	// create path and map variables
+// 	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}/attrs"
+// 	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
 
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
+// 	localVarHeaderParams := make(map[string]string)
+// 	localVarQueryParams := url.Values{}
+// 	localVarFormParams := url.Values{}
 
-	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
-		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Attrs.IsSet() {
-		localVarQueryParams.Add("attrs", parameterToString(localVarOptionals.Attrs.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Metadata.IsSet() {
-		localVarQueryParams.Add("metadata", parameterToString(localVarOptionals.Metadata.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
-		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
-	}
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{}
+// 	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
+// 		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
+// 	}
+// 	if localVarOptionals != nil && localVarOptionals.Attrs.IsSet() {
+// 		localVarQueryParams.Add("attrs", parameterToString(localVarOptionals.Attrs.Value(), ""))
+// 	}
+// 	if localVarOptionals != nil && localVarOptionals.Metadata.IsSet() {
+// 		localVarQueryParams.Add("metadata", parameterToString(localVarOptionals.Metadata.Value(), ""))
+// 	}
+// 	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
+// 		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
+// 	}
+// 	// to determine the Content-Type header
+// 	localVarHttpContentTypes := []string{}
 
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
+// 	// set Content-Type header
+// 	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+// 	if localVarHttpContentType != "" {
+// 		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+// 	}
 
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
+// 	// to determine the Accept header
+// 	localVarHttpHeaderAccepts := []string{"application/json"}
 
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
+// 	// set Accept header
+// 	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+// 	if localVarHttpHeaderAccept != "" {
+// 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+// 	}
+// 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+// 	if err != nil {
+// 		return localVarReturnValue, nil, err
+// 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
+// 	localVarHttpResponse, err := a.client.callAPI(r)
+// 	if err != nil || localVarHttpResponse == nil {
+// 		return localVarReturnValue, localVarHttpResponse, err
+// 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
+// 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+// 	localVarHttpResponse.Body.Close()
+// 	if err != nil {
+// 		return localVarReturnValue, localVarHttpResponse, err
+// 	}
 
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		if err == nil {
-			return localVarReturnValue, localVarHttpResponse, err
-		}
-	}
+// 	if localVarHttpResponse.StatusCode < 300 {
+// 		// If we succeed, return the data, otherwise pass on to decode error.
+// 		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+// 		if err == nil {
+// 			return localVarReturnValue, localVarHttpResponse, err
+// 		}
+// 	}
 
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-		if localVarHttpResponse.StatusCode == 200 {
-			var v RetrieveEntityAttributesResponse
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
-		}
-		return localVarReturnValue, localVarHttpResponse, newErr
-	}
+// 	if localVarHttpResponse.StatusCode >= 300 {
+// 		newErr := GenericSwaggerError{
+// 			body:  localVarBody,
+// 			error: localVarHttpResponse.Status,
+// 		}
+// 		if localVarHttpResponse.StatusCode == 200 {
+// 			var v RetrieveEntityAttributesResponse
+// 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+// 			if err != nil {
+// 				newErr.error = err.Error()
+// 				return localVarReturnValue, localVarHttpResponse, newErr
+// 			}
+// 			newErr.model = v
+// 			return localVarReturnValue, localVarHttpResponse, newErr
+// 		}
+// 		return localVarReturnValue, localVarHttpResponse, newErr
+// 	}
 
-	return localVarReturnValue, localVarHttpResponse, nil
-}
+// 	return localVarReturnValue, localVarHttpResponse, nil
+// }
 
-/*
-EntitiesApiService Update Existing Entity Attributes
-The request payload is an object representing the attributes to update. The object follows the JSON entity representation format (described in \&quot;JSON Entity Representation\&quot; section), except that &#x60;id&#x60; and &#x60;type&#x60; are not allowed. The entity attributes are updated with the ones in the payload. In addition to that, if one or more attributes in the payload doesn&#x27;t exist in the entity, an error is returned. Response: * Successful operation uses 204 No Content * Errors use a non-2xx and (optionally) an error payload. See subsection on \&quot;Error Responses\&quot; for   more details.
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param body
- * @param contentType
- * @param entityId Id of the entity to be updated
- * @param optional nil or *EntitiesApiUpdateExistingEntityAttributesOpts - Optional Parameters:
-     * @param "Type_" (optional.String) -  Entity type, to avoid ambiguity in case there are several entities with the same entity id.
-     * @param "Options" (optional.String) -  Operations options
+// /*
+// EntitiesApiService Update Existing Entity Attributes
+// The request payload is an object representing the attributes to update. The object follows the JSON entity representation format (described in \&quot;JSON Entity Representation\&quot; section), except that &#x60;id&#x60; and &#x60;type&#x60; are not allowed. The entity attributes are updated with the ones in the payload. In addition to that, if one or more attributes in the payload doesn&#x27;t exist in the entity, an error is returned. Response: * Successful operation uses 204 No Content * Errors use a non-2xx and (optionally) an error payload. See subsection on \&quot;Error Responses\&quot; for   more details.
+//  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+//  * @param body
+//  * @param contentType
+//  * @param entityId Id of the entity to be updated
+//  * @param optional nil or *EntitiesApiUpdateExistingEntityAttributesOpts - Optional Parameters:
+//      * @param "Type_" (optional.String) -  Entity type, to avoid ambiguity in case there are several entities with the same entity id.
+//      * @param "Options" (optional.String) -  Operations options
 
-*/
+// */
 
-type EntitiesApiUpdateExistingEntityAttributesOpts struct {
-	Type_   optional.String
-	Options optional.String
-}
+// type EntitiesApiUpdateExistingEntityAttributesOpts struct {
+// 	Type_   optional.String
+// 	Options optional.String
+// }
 
-func (a *EntitiesApiService) UpdateExistingEntityAttributes(ctx context.Context, body UpdateExistingEntityAttributesRequest, contentType string, entityId string, localVarOptionals *EntitiesApiUpdateExistingEntityAttributesOpts) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
+// func (a *EntitiesApiService) UpdateExistingEntityAttributes(ctx context.Context, body UpdateExistingEntityAttributesRequest, contentType string, entityId string, localVarOptionals *EntitiesApiUpdateExistingEntityAttributesOpts) (*http.Response, error) {
+// 	var (
+// 		localVarHttpMethod = strings.ToUpper("Patch")
+// 		localVarPostBody   interface{}
+// 		localVarFileName   string
+// 		localVarFileBytes  []byte
+// 	)
 
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}/attrs"
-	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
+// 	// create path and map variables
+// 	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}/attrs"
+// 	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
 
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
+// 	localVarHeaderParams := make(map[string]string)
+// 	localVarQueryParams := url.Values{}
+// 	localVarFormParams := url.Values{}
 
-	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
-		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
-		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
-	}
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
+// 	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
+// 		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
+// 	}
+// 	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
+// 		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
+// 	}
+// 	// to determine the Content-Type header
+// 	localVarHttpContentTypes := []string{"application/json"}
 
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
+// 	// set Content-Type header
+// 	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+// 	if localVarHttpContentType != "" {
+// 		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+// 	}
 
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{}
+// 	// to determine the Accept header
+// 	localVarHttpHeaderAccepts := []string{}
 
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	localVarHeaderParams["Content-Type"] = parameterToString(contentType, "")
-	// body params
-	localVarPostBody = &body
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
+// 	// set Accept header
+// 	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+// 	if localVarHttpHeaderAccept != "" {
+// 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+// 	}
+// 	localVarHeaderParams["Content-Type"] = parameterToString(contentType, "")
+// 	// body params
+// 	localVarPostBody = &body
+// 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
+// 	localVarHttpResponse, err := a.client.callAPI(r)
+// 	if err != nil || localVarHttpResponse == nil {
+// 		return localVarHttpResponse, err
+// 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
+// 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+// 	localVarHttpResponse.Body.Close()
+// 	if err != nil {
+// 		return localVarHttpResponse, err
+// 	}
 
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-		return localVarHttpResponse, newErr
-	}
+// 	if localVarHttpResponse.StatusCode >= 300 {
+// 		newErr := GenericSwaggerError{
+// 			body:  localVarBody,
+// 			error: localVarHttpResponse.Status,
+// 		}
+// 		return localVarHttpResponse, newErr
+// 	}
 
-	return localVarHttpResponse, nil
-}
+// 	return localVarHttpResponse, nil
+// }
 
-/*
-EntitiesApiService Update or Append Entity Attributes
-The request payload is an object representing the attributes to append or update. The object follows the JSON entity representation format (described in \&quot;JSON Entity Representation\&quot; section), except that &#x60;id&#x60; and &#x60;type&#x60; are not allowed. The entity attributes are updated with the ones in the payload, depending on whether the &#x60;append&#x60; operation option is used or not. * If &#x60;append&#x60; is not used: the entity attributes are updated (if they previously exist) or appended   (if they don&#x27;t previously exist) with the ones in the payload. * If &#x60;append&#x60; is used (i.e. strict append semantics): all the attributes in the payload not   previously existing in the entity are appended. In addition to that, in case some of the   attributes in the payload already exist in the entity, an error is returned. Response: * Successful operation uses 204 No Content * Errors use a non-2xx and (optionally) an error payload. See subsection on \&quot;Error Responses\&quot; for   more details.
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param body
- * @param contentType
- * @param entityId Entity id to be updated
- * @param optional nil or *EntitiesApiUpdateOrAppendEntityAttributesOpts - Optional Parameters:
-     * @param "Type_" (optional.String) -  Entity type, to avoid ambiguity in case there are several entities with the same entity id.
-     * @param "Options" (optional.String) -  Operations options
+// /*
+// EntitiesApiService Update or Append Entity Attributes
+// The request payload is an object representing the attributes to append or update. The object follows the JSON entity representation format (described in \&quot;JSON Entity Representation\&quot; section), except that &#x60;id&#x60; and &#x60;type&#x60; are not allowed. The entity attributes are updated with the ones in the payload, depending on whether the &#x60;append&#x60; operation option is used or not. * If &#x60;append&#x60; is not used: the entity attributes are updated (if they previously exist) or appended   (if they don&#x27;t previously exist) with the ones in the payload. * If &#x60;append&#x60; is used (i.e. strict append semantics): all the attributes in the payload not   previously existing in the entity are appended. In addition to that, in case some of the   attributes in the payload already exist in the entity, an error is returned. Response: * Successful operation uses 204 No Content * Errors use a non-2xx and (optionally) an error payload. See subsection on \&quot;Error Responses\&quot; for   more details.
+//  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+//  * @param body
+//  * @param contentType
+//  * @param entityId Entity id to be updated
+//  * @param optional nil or *EntitiesApiUpdateOrAppendEntityAttributesOpts - Optional Parameters:
+//      * @param "Type_" (optional.String) -  Entity type, to avoid ambiguity in case there are several entities with the same entity id.
+//      * @param "Options" (optional.String) -  Operations options
 
-*/
+// */
 
-type EntitiesApiUpdateOrAppendEntityAttributesOpts struct {
-	Type_   optional.String
-	Options optional.String
-}
+// type EntitiesApiUpdateOrAppendEntityAttributesOpts struct {
+// 	Type_   optional.String
+// 	Options optional.String
+// }
 
-func (a *EntitiesApiService) UpdateOrAppendEntityAttributes(ctx context.Context, body UpdateOrAppendEntityAttributesRequest, contentType string, entityId string, localVarOptionals *EntitiesApiUpdateOrAppendEntityAttributesOpts) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Post")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
+// func (a *EntitiesApiService) UpdateOrAppendEntityAttributes(ctx context.Context, body UpdateOrAppendEntityAttributesRequest, contentType string, entityId string, localVarOptionals *EntitiesApiUpdateOrAppendEntityAttributesOpts) (*http.Response, error) {
+// 	var (
+// 		localVarHttpMethod = strings.ToUpper("Post")
+// 		localVarPostBody   interface{}
+// 		localVarFileName   string
+// 		localVarFileBytes  []byte
+// 	)
 
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}/attrs"
-	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
+// 	// create path and map variables
+// 	localVarPath := a.client.cfg.BasePath + "/v2/entities/{entityId}/attrs"
+// 	localVarPath = strings.Replace(localVarPath, "{"+"entityId"+"}", fmt.Sprintf("%v", entityId), -1)
 
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
+// 	localVarHeaderParams := make(map[string]string)
+// 	localVarQueryParams := url.Values{}
+// 	localVarFormParams := url.Values{}
 
-	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
-		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
-	}
-	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
-		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
-	}
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
+// 	if localVarOptionals != nil && localVarOptionals.Type_.IsSet() {
+// 		localVarQueryParams.Add("type", parameterToString(localVarOptionals.Type_.Value(), ""))
+// 	}
+// 	if localVarOptionals != nil && localVarOptionals.Options.IsSet() {
+// 		localVarQueryParams.Add("options", parameterToString(localVarOptionals.Options.Value(), ""))
+// 	}
+// 	// to determine the Content-Type header
+// 	localVarHttpContentTypes := []string{"application/json"}
 
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
+// 	// set Content-Type header
+// 	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+// 	if localVarHttpContentType != "" {
+// 		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+// 	}
 
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{}
+// 	// to determine the Accept header
+// 	localVarHttpHeaderAccepts := []string{}
 
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	localVarHeaderParams["Content-Type"] = parameterToString(contentType, "")
-	// body params
-	localVarPostBody = &body
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
+// 	// set Accept header
+// 	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+// 	if localVarHttpHeaderAccept != "" {
+// 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+// 	}
+// 	localVarHeaderParams["Content-Type"] = parameterToString(contentType, "")
+// 	// body params
+// 	localVarPostBody = &body
+// 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
+// 	localVarHttpResponse, err := a.client.callAPI(r)
+// 	if err != nil || localVarHttpResponse == nil {
+// 		return localVarHttpResponse, err
+// 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
+// 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+// 	localVarHttpResponse.Body.Close()
+// 	if err != nil {
+// 		return localVarHttpResponse, err
+// 	}
 
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-		return localVarHttpResponse, newErr
-	}
+// 	if localVarHttpResponse.StatusCode >= 300 {
+// 		newErr := GenericSwaggerError{
+// 			body:  localVarBody,
+// 			error: localVarHttpResponse.Status,
+// 		}
+// 		return localVarHttpResponse, newErr
+// 	}
 
-	return localVarHttpResponse, nil
-}
+// 	return localVarHttpResponse, nil
+// }
