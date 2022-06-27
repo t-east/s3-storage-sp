@@ -2,40 +2,22 @@ package controllers
 
 import (
 	"net/http"
-	"sp/src/core"
 	"sp/src/domains/entities"
-	"sp/src/interfaces/contracts"
-	"sp/src/interfaces/gateways"
 	"sp/src/log"
 	"sp/src/usecases/interactor"
-	"sp/src/usecases/port"
 
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
-type ContentController struct {
-	// -> gateway.NewContentRepository
-	RepoFactory func(c *gorm.DB) port.ContentRepository
-	// -> contracts.NewContentContracts
-	ContractFactory func() port.ContentContract
-	// -> crypt.NewContentCrypt
-	CryptFactory func() port.ContentContract
-	// -> interactor.NewContentInputPort
-	InputFactory func(
-		u port.ContentRepository,
-		co port.ContentContract,
-	) port.ContentInputPort
-	Conn  *gorm.DB
-	Param *entities.Param
+type ContentHandler struct {
+	contentUC *interactor.ContentUseCase
 }
 
-func LoadContentController(param *entities.Param) *ContentController {
-	return &ContentController{Param: param}
+func NewContentHandler(contentUC *interactor.ContentUseCase) *ContentHandler {
+	return &ContentHandler{contentUC: contentUC}
 }
-
-func (cc *ContentController) Post(c echo.Context) error {
+func (ch *ContentHandler) Post(c echo.Context) error {
 	logger, _ := log.NewLogger()
 	req := &entities.ContentIn{}
 	if err := c.Bind(req); err != nil {
@@ -47,13 +29,7 @@ func (cc *ContentController) Post(c echo.Context) error {
 		Content:  req.Content,
 		MetaData: req.MetaData,
 	}
-	repository := gateways.NewContentRepository()
-	contract := contracts.NewContentContracts()
-	inputPort := interactor.NewContentInputPort(
-		repository,
-		contract,
-	)
-	receipt, err := inputPort.Upload(content, cc.Param)
+	receipt, err := ch.contentUC.Upload(content)
 	if err != nil {
 		logger.Error("Failed.", zap.Error(err))
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -61,28 +37,10 @@ func (cc *ContentController) Post(c echo.Context) error {
 	return c.JSON(http.StatusCreated, receipt)
 }
 
-func (cc *ContentController) Get(w http.ResponseWriter, r *http.Request) {
-	_, tail := core.ShiftPath(r.URL.Path)
-	_, tail = core.ShiftPath(tail)
-	id, _ := core.ShiftPath(tail)
-	repository := gateways.NewContentRepository()
-	contract := contracts.NewContentContracts()
-	inputPort := interactor.NewContentInputPort(
-		repository,
-		contract,
-	)
-	inputPort.FindByID(id)
-}
+func (ch *ContentHandler) FindAll(c echo.Context) error {
+	logger, _ := log.NewLogger()
 
-func (cc *ContentController) FindAll(c echo.Context) error {
-	logger, err := log.NewLogger()
-	repository := gateways.NewContentRepository()
-	contract := contracts.NewContentContracts()
-	inputPort := interactor.NewContentInputPort(
-		repository,
-		contract,
-	)
-	receipts, err := inputPort.FindAll()
+	receipts, err := ch.contentUC.FindAll()
 	if err != nil {
 		logger.Error("Failed.", zap.Error(err))
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

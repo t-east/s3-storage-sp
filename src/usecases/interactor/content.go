@@ -5,20 +5,19 @@ import (
 	port "sp/src/usecases/port"
 )
 
-type ContentHandler struct {
-	Repository      port.ContentRepository
+type ContentUseCase struct {
 	ContentContract port.ContentContract
-	ContentStorage  port.ContentStorage
+	ContentRepo   port.ContentRepository
 }
 
-func NewContentInputPort(repository port.ContentRepository, contract port.ContentContract) port.ContentInputPort {
-	return &ContentHandler{
-		Repository:      repository,
-		ContentContract: contract,
+func NewContentUseCase(contentContract port.ContentContract, contentRepo port.ContentRepository) *ContentUseCase {
+	return &ContentUseCase{
+		ContentContract: contentContract,
+		ContentRepo:     contentRepo,
 	}
 }
 
-func (c *ContentHandler) Upload(ci *entities.ContentIn, param *entities.Param) (*entities.Receipt, error) {
+func (c *ContentUseCase) Upload(ci *entities.ContentIn) (*entities.Receipt, error) {
 	content := &entities.Content{
 		Address:  ci.Address,
 		Content:  ci.Content,
@@ -31,7 +30,7 @@ func (c *ContentHandler) Upload(ci *entities.ContentIn, param *entities.Param) (
 	// }
 	content.HashData = []string{"s", "s", "s"}
 	// //* FIWAREに保存
-	receipt, err := c.Repository.Create(content)
+	receipt, err := c.ContentRepo.Create(content)
 	if err != nil {
 		return nil, err
 	}
@@ -53,29 +52,19 @@ func (c *ContentHandler) Upload(ci *entities.ContentIn, param *entities.Param) (
 	return result, nil
 }
 
-func (c *ContentHandler) FindByID(id string) {
+func (c *ContentUseCase) FindByID(id string) {
 	//* content情報を取得
-	_, err := c.Repository.Find(id)
+	_, err := c.ContentRepo.Find(id)
 	if err != nil {
 		return
 	}
 }
 
-func (c *ContentHandler) FindAll() ([]*entities.Receipt, error) {
+func (c *ContentUseCase) FindAll() ([]*entities.Receipt, error) {
 	//* content情報を取得
-	receipts, err := c.Repository.All()
+	receipts, err := c.ContentRepo.All()
 	if err != nil {
 		return nil, err
 	}
 	return receipts, nil
-}
-
-// TODO keyを使ってファイルのurlを取得する実装
-func (c *ContentHandler) GetFileByID(key string) string {
-	//* 署名付きurlを返す
-	url, err := c.ContentStorage.GetPreSignedURL(key)
-	if err != nil {
-		return ""
-	}
-	return url
 }
