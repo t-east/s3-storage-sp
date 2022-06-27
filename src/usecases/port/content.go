@@ -16,6 +16,10 @@ type ContentRepository interface {
 	All() ([]*entities.Receipt, error)
 }
 
+type ContentCrypt interface {
+	ContentHashGen(content *entities.Content) (*entities.Content, error)
+}
+
 type ContentContract interface {
 	Set( content *entities.Content ) error
 	Get( id string ) (*entities.ContentLog, error )

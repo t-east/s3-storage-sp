@@ -26,9 +26,10 @@ func realMain() {
 	}
 	contentContract := contracts.NewContentContracts()
 	contentRepo := gateways.NewContentRepository()
+	contentCrypt := crypt.NewContentCrypt(param)
 	auditContract := contracts.NewAuditContracts()
 	auditCrypt := crypt.NewAuditCrypt(param)
-	cu := interactor.NewContentUseCase(contentContract, contentRepo)
+	cu := interactor.NewContentUseCase(contentContract, contentRepo, contentCrypt)
 	au := interactor.NewAuditUseCase(auditContract,auditCrypt, contentRepo)
 
 	e := router.NewServer(cu, au)

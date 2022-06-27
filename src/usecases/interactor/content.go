@@ -7,13 +7,15 @@ import (
 
 type ContentUseCase struct {
 	ContentContract port.ContentContract
-	ContentRepo   port.ContentRepository
+	ContentRepo     port.ContentRepository
+	ContentCrypt    port.ContentCrypt
 }
 
-func NewContentUseCase(contentContract port.ContentContract, contentRepo port.ContentRepository) *ContentUseCase {
+func NewContentUseCase(contentContract port.ContentContract, contentRepo port.ContentRepository, contenCrypt port.ContentCrypt) *ContentUseCase {
 	return &ContentUseCase{
 		ContentContract: contentContract,
 		ContentRepo:     contentRepo,
+		ContentCrypt:    contenCrypt,
 	}
 }
 
@@ -23,23 +25,18 @@ func (c *ContentUseCase) Upload(ci *entities.ContentIn) (*entities.Receipt, erro
 		Content:  ci.Content,
 		MetaData: ci.MetaData,
 	}
-	// //* コンテンツからからハッシュ値を生成
-	// hash, err := core.HashGen(param, content.Content)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	content.HashData = []string{"s", "s", "s"}
+	//* コンテンツからからハッシュ値を生成
+	content, err := c.ContentCrypt.ContentHashGen(content)
+	if err != nil {
+		return nil, err
+	}
 	// //* FIWAREに保存
 	receipt, err := c.ContentRepo.Create(content)
 	if err != nil {
 		return nil, err
 	}
-	// //* ブロックチェーンに登録
-	// err = c.ContentContract.Set(content)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// cl, err := c.ContentContract.Get(content.ID)
+	//* ブロックチェーンに登録
+	err = c.ContentContract.Set(content)
 	if err != nil {
 		return nil, err
 	}
