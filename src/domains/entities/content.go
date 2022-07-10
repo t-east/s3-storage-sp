@@ -62,15 +62,17 @@ type ContentInStorage struct {
 }
 
 type ContentInBlockChain struct {
-	MetaData   []string `json:"meta_data"`
-	HashedData []string `json:"hashed_data"`
-	FileName   string   `json:"name"`
-	SplitCount int      `json:"split_count"`
-	Owner      string   `json:"owner"`
+	HashedData [][]byte `json:"hashed_data"`
 	ContentId  string   `json:"content_id"`
+	Owner      string   `json:"owner"`
 }
 
 type Key struct {
 	PubKey  string `json:"pubkey"`
 	PrivKey string `json:"privkey"`
+}
+
+type Log struct {
+	AuditLog   []*AuditLog            `json:"audit_log"`
+	ContentLog []*ContentInBlockChain `json:"content_log"`
 }

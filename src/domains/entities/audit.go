@@ -27,3 +27,10 @@ type Chals struct {
 	DataList []Chal `json:"data"`
 	Total    int    `json:"total"`
 }
+
+type AuditLog struct {
+	Chal      *Chal  `json:"chal"`
+	Proof     *Proof `json:"proof"`
+	Result    bool   `json:"result"`
+	ContentID string `json:"content_id"`
+}

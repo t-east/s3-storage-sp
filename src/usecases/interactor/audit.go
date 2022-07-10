@@ -34,12 +34,12 @@ func (au *AuditUseCase) ProofGen() (*entities.Proofs, error) {
 			return nil, err
 		}
 		// //* チャレンジIDからハッシュデータをブロックチェーンから読み込む
-		contentLog, err := au.AuditContract.GetContentLog(receipts[i].ID)
+		contentLog, err := au.AuditContract.Get(receipts[i].ID)
 		if err != nil {
 			return nil, err
 		}
 		//* proof作成
-		proof, err := au.AuditCrypt.AuditProofGen(challen, contentLog, contentLog) // TODO: 実装修正
+		proof, err := au.AuditCrypt.AuditProofGen(challen, receipts[i], contentLog) // TODO: 実装修正
 		if err != nil {
 			return nil, err
 		}

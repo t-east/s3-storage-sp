@@ -14,10 +14,9 @@ import (
 )
 
 func realMain() {
-	conn, _ := ethereum.ConnectParamNetWork()
-	p, err := conn.GetParam(&bind.CallOpts{})
+	err := godotenv.Load()
 	if err != nil {
-		log.Print(err)
+		log.Fatal(".env not found")
 	}
 	param := &entities.Param{
 		Pairing: p.Pairing,
@@ -30,7 +29,7 @@ func realMain() {
 	auditContract := contracts.NewAuditContracts()
 	auditCrypt := crypt.NewAuditCrypt(param)
 	cu := interactor.NewContentUseCase(contentContract, contentRepo, contentCrypt)
-	au := interactor.NewAuditUseCase(auditContract,auditCrypt, contentRepo)
+	au := interactor.NewAuditUseCase(auditContract, auditCrypt, contentRepo)
 
 	e := router.NewServer(cu, au)
 	e.Logger.Fatal(e.Start(":4001"))

@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"errors"
 	entities "sp/src/domains/entities"
 	port "sp/src/usecases/port"
 )
@@ -33,7 +34,7 @@ func (c *ContentUseCase) Upload(ci *entities.ContentIn) (*entities.Receipt, erro
 	// //* FIWAREに保存
 	receipt, err := c.ContentRepo.Create(content)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("fiware error")
 	}
 	//* ブロックチェーンに登録
 	err = c.ContentContract.Set(content)

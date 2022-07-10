@@ -25,8 +25,8 @@ func NewAuditCrypt(param *entities.Param) port.AuditCrypt {
 
 func (pr *AuditCrypt) AuditProofGen(
 	chal *entities.Chal,
-	content *entities.Content,
-	contentLog *entities.Content,
+	content *entities.Receipt,
+	contentLog *entities.ContentInBlockChain,
 ) (*entities.Proof, error) {
 	var myu *pbc.Element
 	var gamma *pbc.Element

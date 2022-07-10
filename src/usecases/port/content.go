@@ -21,12 +21,12 @@ type ContentCrypt interface {
 }
 
 type ContentContract interface {
-	Set( content *entities.Content ) error
-	Get( id string ) (*entities.ContentLog, error )
+	Set(content *entities.Content) error
+	Get() ([]*entities.ContentInBlockChain, error)
 }
 
 type ContentStorage interface {
-	Upload( content *entities.Content) (*entities.Content ,error)
-	Get(id string) (*entities.Content ,error)
+	Upload(content *entities.Content) (*entities.Content, error)
+	Get(id string) (*entities.Content, error)
 	GetPreSignedURL(key string) (string, error)
 }
