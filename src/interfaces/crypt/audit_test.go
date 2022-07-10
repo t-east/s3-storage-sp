@@ -1,6 +1,8 @@
 package crypt
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"sp/src/core"
 	"sp/src/domains/entities"
 	"testing"
@@ -51,12 +53,54 @@ func TestAudit(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			chal := AuditChallen(param)
+			content.ID = core.MakeULID()
 
-			proof, err := ac.AuditProofGen(chal, content, content)
+			file, _ := json.MarshalIndent(content, "", " ")
+			_ = ioutil.WriteFile("content.json", file, 0644)
+
+			receipt := &entities.Receipt{
+				ID:       content.ID,
+				Content:  content.Content,
+				MetaData: content.MetaData,
+				HashData: content.HashData,
+			}
+
+			cInB := &entities.ContentInBlockChain{
+				HashedData: content.HashData,
+				ContentId:  content.ID,
+				Owner:      content.Address,
+			}
+			chal := AuditChallen(param)
+			chal.ContentId = content.ID
+			file, _ = json.MarshalIndent(chal, "", " ")
+			_ = ioutil.WriteFile("chal.json", file, 0644)
+			proof, err := ac.AuditProofGen(chal, receipt, cInB)
 			if err != nil {
 				t.Fatal(err)
 			}
+			proof.ContentId = content.ID
+			file, _ = json.MarshalIndent(proof, "", " ")
+			_ = ioutil.WriteFile("proof.json", file, 0644)
+
+			log := &entities.Log{
+				AuditLog: []*entities.AuditLog{
+					{
+						Chal:      chal,
+						Proof:     proof,
+						Result:    false,
+						ContentID: cInB.ContentId,
+					},
+				},
+				ContentLog: []*entities.ContentInBlockChain{
+					{
+						HashedData: content.HashData,
+						ContentId:  cInB.ContentId,
+						Owner:      content.Address,
+					},
+				},
+			}
+			file, _ = json.MarshalIndent(log, "", " ")
+			_ = ioutil.WriteFile("log.json", file, 0644)
 
 			left, right, err := AuditVerify(param, key.PubKey, content, proof, chal)
 			if err != nil {

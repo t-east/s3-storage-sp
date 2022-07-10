@@ -2,15 +2,14 @@ package main
 
 import (
 	"log"
-	"sp/src/domains/entities"
-	"sp/src/drivers/ethereum"
+	"sp/src/core"
 	"sp/src/drivers/router"
 	"sp/src/interfaces/contracts"
 	"sp/src/interfaces/crypt"
 	"sp/src/interfaces/gateways"
 	"sp/src/usecases/interactor"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/joho/godotenv"
 )
 
 func realMain() {
@@ -18,10 +17,10 @@ func realMain() {
 	if err != nil {
 		log.Fatal(".env not found")
 	}
-	param := &entities.Param{
-		Pairing: p.Pairing,
-		G:       []byte(p.G),
-		U:       []byte(p.U),
+	// param, err := ethereum.GetParam()
+	param, _, err := core.CreateParamMock()
+	if err != nil {
+		log.Fatal(err)
 	}
 	contentContract := contracts.NewContentContracts()
 	contentRepo := gateways.NewContentRepository()

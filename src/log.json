@@ -1,0 +1,30 @@
+{
+ "audit_log": [
+  {
+   "chal": {
+    "art_id": "01G7KVQF5SV9EESQV6YG2E3NGE",
+    "ck": 2,
+    "k1": "ezAYO1zT6RxRfDDtGgfhXEAwVZY=",
+    "k2": "EKcW0iOsFs8yTgi77Uz2uhN5/5M="
+   },
+   "proof": {
+    "myu": "bJ9S/sBtTMxgYC2CqG7QAQ6ik7Q=",
+    "gamma": "DmnnwTWbujq5ngCUMErXXXgaB273OnQf5cs23mIX7nBSFxtAY0/7uKrKVdlM1rHJvsidIHvD9nq+0EO4v2yfnyRXhyagHwK7vXm4nyNLYU9EC4hvzRV3lJM79/BksxbJ5lylQooF+6sIeMvTAXiwZiQINFC9AtaB7brrNyLePqA=",
+    "content_id": "01G7KVQF5SV9EESQV6YG2E3NGE"
+   },
+   "result": false,
+   "content_id": "01G7KVQF5SV9EESQV6YG2E3NGE"
+  }
+ ],
+ "content_log": [
+  {
+   "hashed_data": [
+    "mL3fxHtyUvzgc6hBbIN4yMKVouLzRZen6o7wCTLtfjM=",
+    "rPkw1weEyNUS+dMqHJ7IjHqTd1MVzJTzGYyx0OQB3YY=",
+    "EG4NHuQ3OILH6jtzb3wjq9bgLK0OcCLx/1H6jAmHPi0="
+   ],
+   "content_id": "01G7KVQF5SV9EESQV6YG2E3NGE",
+   "owner": ""
+  }
+ ]
+}
