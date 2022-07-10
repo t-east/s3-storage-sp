@@ -8,7 +8,7 @@ type Point struct {
 type ContentIn struct {
 	Address  string   `json:"address"`
 	Content  Point    `json:"content"`
-	MetaData []string `json:"meta_data"`
+	MetaData [][]byte `json:"meta_data"`
 }
 
 type ContentInForUser struct {
@@ -33,22 +33,21 @@ type Content struct {
 	ID       string   `json:"id"`
 	Address  string   `json:"address"`
 	Content  Point    `json:"content"`
-	MetaData []string `json:"metadata"`
-	HashData []string `json:"hashdata"`
+	MetaData [][]byte `json:"metadata"`
+	HashData [][]byte `json:"hashdata"`
 }
 
 type ContentLog struct {
 	Owner    string
-	Hash     []string
+	Hash     [][]byte
 	Provider string
 }
 
 type Receipt struct {
 	ID       string   `json:"id"`
 	Content  Point    `json:"content"`
-	MetaData []string `json:"metadata"`
-	HashData []string `json:"hashdata"`
-	Str      string   `json:"str"`
+	MetaData [][]byte `json:"metadata"`
+	HashData [][]byte `json:"hashdata"`
 }
 
 func NewContent() *ContentIn {

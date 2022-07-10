@@ -70,9 +70,9 @@ func (pr *AuditCrypt) AuditProofGen(
 		}
 	}
 	proof := &entities.Proof{
-		Myu:       string(myu.Bytes()),
-		Gamma:     string(gamma.Bytes()),
-		ContentId: contentLog.ID,
+		Myu:       myu.Bytes(),
+		Gamma:     gamma.Bytes(),
+		ContentId: content.ID,
 	}
 	return proof, nil
 }
@@ -86,8 +86,8 @@ func AuditChallen(para *entities.Param) *entities.Chal {
 	return &entities.Chal{
 		ContentId: "",
 		C:         ck,
-		K1:        string(k1.Bytes()),
-		K2:        string(k2.Bytes()),
+		K1:        k1.Bytes(),
+		K2:        k2.Bytes(),
 	}
 }
 
@@ -113,8 +113,8 @@ func MakeMetaData(uc *entities.ContentInForUser, param *entities.Param) (*entiti
 	privKey := pairing.NewZr().SetBytes([]byte(uc.PrivKey))
 
 	// メタデータの作成
-	var metaData []string
-	var hash []string
+	var metaData [][]byte
+	var hash [][]byte
 	for i := 0; i < len(splitedFile); i++ {
 		m := pairing.NewG1().SetFromHash(splitedFile[i])
 
@@ -125,8 +125,8 @@ func MakeMetaData(uc *entities.ContentInForUser, param *entities.Param) (*entiti
 		temp := pairing.NewG1().Mul(um, M)
 		meta := pairing.NewG1().MulZn(temp, privKey)
 
-		metaData = append(metaData, string(meta.Bytes()[:]))
-		hash = append(hash, string(mm))
+		metaData = append(metaData, meta.Bytes()[:])
+		hash = append(hash, mm)
 	}
 
 	return &entities.Content{

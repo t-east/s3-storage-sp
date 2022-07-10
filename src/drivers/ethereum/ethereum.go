@@ -110,7 +110,7 @@ func GetParam() (*entities.Param, error) {
 	}
 	return &entities.Param{
 		Pairing: p.Pairing,
-		G:       []byte(p.G),
-		U:       []byte(p.U),
+		G:       p.G,
+		U:       p.U,
 	}, nil
 }

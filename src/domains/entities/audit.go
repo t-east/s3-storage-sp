@@ -8,13 +8,13 @@ type ArtLog struct {
 type Chal struct {
 	ContentId string `json:"art_id"`
 	C         int    `json:"ck"`
-	K1        string `json:"k1"`
-	K2        string `json:"k2"`
+	K1        []byte `json:"k1"`
+	K2        []byte `json:"k2"`
 }
 
 type Proof struct {
-	Myu       string `json:"myu"`
-	Gamma     string `json:"gamma"`
+	Myu       []byte `json:"myu"`
+	Gamma     []byte `json:"gamma"`
 	ContentId string `json:"content_id"`
 }
 

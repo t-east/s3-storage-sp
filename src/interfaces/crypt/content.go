@@ -40,12 +40,12 @@ func (cc *ContentCrypt) ContentHashGen(c *entities.Content) (*entities.Content, 
 		return nil, err
 	}
 
-	var hash []string
+	var hash [][]byte
 	for i := 0; i < len(splitedFile); i++ {
 		m := pairing.NewG1().SetFromHash(splitedFile[i])
 
 		mm := core.GetBinaryBySHA256(m.X().String())
-		hash = append(hash, string(mm))
+		hash = append(hash, mm)
 	}
 
 	c.HashData = hash
