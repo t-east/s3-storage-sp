@@ -77,6 +77,7 @@ func (a *EntitiesApiService) CreateEntity(ctx context.Context, body CreateEntity
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
 	localVarHeaderParams["Content-Type"] = parameterToString(contentType, "")
+	localVarHeaderParams["Content-Length"] = "[1024]"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)

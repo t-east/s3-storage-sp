@@ -29,10 +29,12 @@ type MetaValues struct {
 }
 
 type CreateEntityRequest struct {
-	Type_ string           `json:"type"`
-	Id    string           `json:"id"`
-	Point *LocationValue   `json:"point"`
-	Meta  *MetaStringValue `json:"meta"`
+	Type_     string           `json:"type"`
+	Id        string           `json:"id"`
+	Point     *LocationValue   `json:"point"`
+	MetaOne   *MetaStringValue `json:"meta_one"`
+	MetaTwo   *MetaStringValue `json:"meta_two"`
+	MetaThree *MetaStringValue `json:"meta_three"`
 }
 
 // "humidity": {

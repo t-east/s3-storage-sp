@@ -12,5 +12,7 @@ type ListEntitiesResponse struct {
 	Type_ string          `json:"type"`
 	Id    string          `json:"id"`
 	Point LocationValue   `json:"point"`
-	Meta  MetaStringValue `json:"meta"`
+	MetaOne  MetaStringValue `json:"meta_one"`
+	MetaTwo  MetaStringValue `json:"meta_two"`
+	MetaThree  MetaStringValue `json:"meta_three"`
 }
