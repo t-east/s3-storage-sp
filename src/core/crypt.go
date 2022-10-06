@@ -1,29 +1,13 @@
 package core
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"math/rand"
-	"os"
 	"sp/src/domains/entities"
 	"time"
 
 	"github.com/Nik-U/pbc"
 	"github.com/oklog/ulid"
 )
-
-func MD5(s string) []byte {
-	hash := md5.Sum([]byte(s))
-	return []byte(hex.EncodeToString(hash[:]))
-}
-
-func UseFileRead(fileName string) (*os.File, error) {
-	fp, err := os.Open(fileName)
-	if err != nil {
-		return &os.File{}, err
-	}
-	return fp, nil
-}
 
 func CreateParamMock() (*entities.Param, *entities.Key, error) {
 	params := pbc.GenerateA(uint32(160), uint32(512))
