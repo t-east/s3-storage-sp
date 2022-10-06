@@ -10,13 +10,17 @@ import (
 	"sp/src/interfaces/gateways"
 	"sp/src/usecases/interactor"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/joho/godotenv"
 )
 
 func realMain() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(".env not found")
+	}
+	p, err := ethereum.GetParam()
+	if err != nil {
+		log.Fatal(err)
 	}
 	param := &entities.Param{
 		Pairing: p.Pairing,
