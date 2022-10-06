@@ -18,7 +18,7 @@ func NewContentRepository() port.ContentRepository {
 	return &ContentRepository{}
 }
 
-func (ur *ContentRepository) Find(id string) (*entities.Content, error) {
+func (ur *ContentRepository) FindByID(id string) (*entities.Content, error) {
 	var content = &entities.Content{}
 	return content, nil
 }
@@ -71,7 +71,7 @@ func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Cont
 	}, nil
 }
 
-func (ur *ContentRepository) All() (receipt []*entities.Content, err error) {
+func (ur *ContentRepository) List() (receipt []*entities.Content, err error) {
 	cfg := fiware.NewConfiguration()
 	client := fiware.NewAPIClient(cfg)
 
