@@ -3,7 +3,6 @@ package core
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"os"
 	"sp/src/domains/entities"
 
@@ -40,20 +39,4 @@ func CreateParamMock() (*entities.Param, *entities.Key, error) {
 		PrivKey: string(privKey.Bytes()),
 	}
 	return p, k, nil
-}
-
-type A struct {
-	Hoge []byte `json:"hoge"`
-}
-
-func (a *A) UnmarshalJSON(data []byte) error {
-	type A2 struct {
-		Hoge string `json:"hoge"`
-	}
-	a2 := new(A2)
-	if err := json.Unmarshal(data, a2); err != nil {
-		return err
-	}
-	a.Hoge = []byte(a2.Hoge)
-	return nil
 }
