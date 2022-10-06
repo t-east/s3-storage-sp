@@ -3,10 +3,13 @@ package core
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"math/rand"
 	"os"
 	"sp/src/domains/entities"
+	"time"
 
 	"github.com/Nik-U/pbc"
+	"github.com/oklog/ulid"
 )
 
 func MD5(s string) []byte {
@@ -39,4 +42,10 @@ func CreateParamMock() (*entities.Param, *entities.Key, error) {
 		PrivKey: string(privKey.Bytes()),
 	}
 	return p, k, nil
+}
+
+func MakeULID() string {
+	t := time.Now()
+	entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
+	return ulid.MustNew(ulid.Timestamp(t), entropy).String()
 }
