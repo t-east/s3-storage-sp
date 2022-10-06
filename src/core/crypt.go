@@ -17,7 +17,7 @@ import (
 )
 
 func SplitSlice(list []byte, size int) ([][]byte, error) {
-	if size <= 0 {
+	if size <= 1 {
 		return nil, fmt.Errorf("size need positive number")
 	}
 	var result [][]byte
