@@ -18,7 +18,7 @@ type Param struct {
 
 type ContentContract struct{}
 
-func NewContentContracts() port.ContentContract {
+func NewContentContracts() port.ContentContractPort {
 	return &ContentContract{}
 }
 
@@ -36,7 +36,7 @@ func (cc *ContentContract) Set(content *entities.Content) error {
 	return nil
 }
 
-func (cc *ContentContract) Get() ([]*entities.ContentInBlockChain, error) {
+func (cc *ContentContract) List() ([]*entities.ContentInBlockChain, error) {
 	conn, _ := ethereum.ConnectContentNetWork()
 	list, err := conn.ListContentLog(&bind.CallOpts{})
 	if err != nil {
@@ -50,4 +50,16 @@ func (cc *ContentContract) Get() ([]*entities.ContentInBlockChain, error) {
 		})
 	}
 	return logs, nil
+}
+
+func (cc *ContentContract) FindByID(id string) (*entities.ContentInBlockChain, error) {
+	conn, _ := ethereum.ConnectContentNetWork()
+	l, err := conn.GetContentLog(&bind.CallOpts{}, id)
+	if err != nil {
+		return nil, err
+	}
+	return &entities.ContentInBlockChain{
+		HashedData: l.Hash,
+		ContentId:  id,
+	}, nil
 }

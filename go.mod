@@ -6,7 +6,6 @@ require (
 	github.com/Nik-U/pbc v0.0.0-20181205041846-3e516ca0c5d6
 	github.com/antihax/optional v1.0.0
 	github.com/ethereum/go-ethereum v1.10.18
-	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.46.2
 	github.com/google/go-cmp v0.5.8
 	github.com/joho/godotenv v1.4.0

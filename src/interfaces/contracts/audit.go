@@ -11,18 +11,18 @@ import (
 
 type AuditContract struct{}
 
-func NewAuditContracts() port.AuditContract {
+func NewAuditContracts() port.AuditContractPort {
 	return &AuditContract{}
 }
 
-func (cc *AuditContract) GetChallen(id string) (*entities.Chal, error) {
+func (cc *AuditContract) GetChallen(id string) (*entities.Challenge, error) {
 
 	conn, _ := ethereum.ConnectAuditNetWork()
 	log, err := conn.GetAuditLog(&bind.CallOpts{}, id)
 	if err != nil {
 		return nil, err
 	}
-	return &entities.Chal{
+	return &entities.Challenge{
 		ContentId: id,
 		C:         int(log.Chal),
 		K1:        log.K1,
@@ -41,14 +41,14 @@ func (cc *AuditContract) RegisterProof(proof *entities.Proof) error {
 	return err
 }
 
-func (cc *AuditContract) GetAuditLog(id string) (*entities.AuditLog, error) {
+func (cc *AuditContract) FindByID(id string) (*entities.AuditLog, error) {
 	conn, _ := ethereum.ConnectAuditNetWork()
 	a, err := conn.GetAuditLog(&bind.CallOpts{}, id)
 	if err != nil {
 		return nil, err
 	}
 	return &entities.AuditLog{
-		Chal: &entities.Chal{
+		Chal: &entities.Challenge{
 			ContentId: id,
 			C:         int(a.Chal),
 			K1:        a.K1,
@@ -61,17 +61,5 @@ func (cc *AuditContract) GetAuditLog(id string) (*entities.AuditLog, error) {
 		},
 		Result:    a.Result,
 		ContentID: id,
-	}, nil
-}
-
-func (cc *AuditContract) Get(id string) (*entities.ContentInBlockChain, error) {
-	conn, _ := ethereum.ConnectContentNetWork()
-	l, err := conn.GetContentLog(&bind.CallOpts{}, id)
-	if err != nil {
-		return nil, err
-	}
-	return &entities.ContentInBlockChain{
-		HashedData: l.Hash,
-		ContentId:  id,
 	}, nil
 }
