@@ -5,7 +5,7 @@ import (
 )
 
 type AuditInputPort interface {
-	ProofGen() (*entities.Proofs, error)
+	ProofGen() (*entities.ProofList, error)
 }
 
 type AuditRepository interface {
@@ -15,7 +15,7 @@ type AuditRepository interface {
 
 type AuditContract interface {
 	RegisterProof( content *entities.Proof ) error
-	GetChallen(string) (*entities.Chal, error)
+	GetChallen(string) (*entities.Challenge, error)
 	GetAuditLog(id string) (*entities.AuditLog, error)
 	Get(string) (*entities.ContentInBlockChain, error)
 }
@@ -25,5 +25,5 @@ type AuditStorage interface {
 }
 
 type AuditCrypt interface {
-	AuditProofGen( chal *entities.Chal, content *entities.Receipt, contentLog *entities.ContentInBlockChain ) (*entities.Proof, error)
+	AuditProofGen( chal *entities.Challenge, content *entities.Content, contentLog *entities.ContentInBlockChain ) (*entities.Proof, error)
 }

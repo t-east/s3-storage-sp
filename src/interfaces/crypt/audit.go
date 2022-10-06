@@ -24,8 +24,8 @@ func NewAuditCrypt(param *entities.Param) port.AuditCrypt {
 }
 
 func (pr *AuditCrypt) AuditProofGen(
-	chal *entities.Chal,
-	content *entities.Receipt,
+	chal *entities.Challenge,
+	content *entities.Content,
 	contentLog *entities.ContentInBlockChain,
 ) (*entities.Proof, error) {
 	var myu *pbc.Element
@@ -77,13 +77,13 @@ func (pr *AuditCrypt) AuditProofGen(
 	return proof, nil
 }
 
-func AuditChallen(para *entities.Param) *entities.Chal {
+func AuditChallen(para *entities.Param) *entities.Challenge {
 	pairing, _ := pbc.NewPairingFromString(para.Pairing)
 
 	ck := rand.Intn(2) + 1
 	k1 := pairing.NewZr().Rand()
 	k2 := pairing.NewZr().Rand()
-	return &entities.Chal{
+	return &entities.Challenge{
 		ContentId: "",
 		C:         ck,
 		K1:        k1.Bytes(),
@@ -136,7 +136,7 @@ func MakeMetaData(uc *entities.ContentInForUser, param *entities.Param) (*entiti
 	}, nil
 }
 
-func AuditVerify(params *entities.Param, pubKeyStr string, content *entities.Content, proof *entities.Proof, chal *entities.Chal) ([]byte, []byte, error) {
+func AuditVerify(params *entities.Param, pubKeyStr string, content *entities.Content, proof *entities.Proof, chal *entities.Challenge) ([]byte, []byte, error) {
 	pairing, _ := pbc.NewPairingFromString(params.Pairing)
 	aTable, vTable := core.HashChallen(chal.C, []byte(chal.K1), []byte(chal.K2), pairing)
 	g := pairing.NewG1().SetBytes(params.G)

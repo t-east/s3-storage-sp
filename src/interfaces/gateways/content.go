@@ -71,7 +71,7 @@ func (ur *ContentRepository) Create(c *entities.Content) (receipt *entities.Cont
 	}, nil
 }
 
-func (ur *ContentRepository) All() (receipt []*entities.Receipt, err error) {
+func (ur *ContentRepository) All() (receipt []*entities.Content, err error) {
 	cfg := fiware.NewConfiguration()
 	client := fiware.NewAPIClient(cfg)
 
@@ -81,7 +81,7 @@ func (ur *ContentRepository) All() (receipt []*entities.Receipt, err error) {
 		return nil, err
 	}
 
-	var receipts []*entities.Receipt
+	var receipts []*entities.Content
 	for i := 0; i < len(list); i++ {
 		var metas [][]byte
 		decOne, _ := base64.StdEncoding.DecodeString(list[i].MetaOne.Value + "=")
@@ -92,7 +92,7 @@ func (ur *ContentRepository) All() (receipt []*entities.Receipt, err error) {
 		metas = append(metas, decThree)
 		log.Print(metas)
 		pointList := list[i].Point.Value.Coordinates
-		receipt := &entities.Receipt{
+		receipt := &entities.Content{
 			ID: list[i].Id,
 			Content: entities.Point{
 				X: pointList[0],

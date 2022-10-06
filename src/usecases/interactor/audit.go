@@ -19,8 +19,8 @@ func NewAuditUseCase(auditContract port.AuditContract, auditCrypt port.AuditCryp
 	}
 }
 
-func (au *AuditUseCase) ProofGen() (*entities.Proofs, error) {
-	proofs := &entities.Proofs{}
+func (au *AuditUseCase) ProofGen() (*entities.ProofList, error) {
+	proofList := &entities.ProofList{}
 	// * DBからコンテンツ情報を全取得
 	receipts, err := au.ContentRepo.All()
 	if err != nil {
@@ -49,14 +49,14 @@ func (au *AuditUseCase) ProofGen() (*entities.Proofs, error) {
 			return nil, err
 		}
 
-		proofs.DataList = append(proofs.DataList,
+		proofList.DataList = append(proofList.DataList,
 			entities.Proof{
 				Myu:       proof.Myu,
 				Gamma:     proof.Gamma,
 				ContentId: proof.ContentId,
 			},
 		)
-		proofs.Total += 1
+		proofList.Total += 1
 	}
-	return proofs, nil
+	return proofList, nil
 }

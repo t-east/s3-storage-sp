@@ -20,7 +20,7 @@ func NewContentUseCase(contentContract port.ContentContract, contentRepo port.Co
 	}
 }
 
-func (c *ContentUseCase) Upload(ci *entities.ContentIn) (*entities.Receipt, error) {
+func (c *ContentUseCase) Upload(ci *entities.ContentIn) (*entities.Content, error) {
 	content := &entities.Content{
 		Address:  ci.Address,
 		Content:  ci.Content,
@@ -32,7 +32,7 @@ func (c *ContentUseCase) Upload(ci *entities.ContentIn) (*entities.Receipt, erro
 		return nil, err
 	}
 	// //* FIWAREに保存
-	receipt, err := c.ContentRepo.Create(content)
+	created, err := c.ContentRepo.Create(content)
 	if err != nil {
 		return nil, errors.New("fiware error")
 	}
@@ -41,11 +41,11 @@ func (c *ContentUseCase) Upload(ci *entities.ContentIn) (*entities.Receipt, erro
 	if err != nil {
 		return nil, err
 	}
-	result := &entities.Receipt{
-		ID:       receipt.ID,
-		Content:  receipt.Content,
-		MetaData: receipt.MetaData,
-		HashData: receipt.HashData,
+	result := &entities.Content{
+		ID:       created.ID,
+		Content:  created.Content,
+		MetaData: created.MetaData,
+		HashData: created.HashData,
 	}
 	return result, nil
 }
@@ -58,11 +58,11 @@ func (c *ContentUseCase) FindByID(id string) {
 	}
 }
 
-func (c *ContentUseCase) FindAll() ([]*entities.Receipt, error) {
+func (c *ContentUseCase) FindAll() ([]*entities.Content, error) {
 	//* content情報を取得
-	receipts, err := c.ContentRepo.All()
+	list, err := c.ContentRepo.All()
 	if err != nil {
 		return nil, err
 	}
-	return receipts, nil
+	return list, nil
 }

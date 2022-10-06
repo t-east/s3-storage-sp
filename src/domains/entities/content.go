@@ -37,19 +37,6 @@ type Content struct {
 	HashData [][]byte `json:"hashdata"`
 }
 
-type ContentLog struct {
-	Owner    string
-	Hash     [][]byte
-	Provider string
-}
-
-type Receipt struct {
-	ID       string   `json:"id"`
-	Content  Point    `json:"content"`
-	MetaData [][]byte `json:"metadata"`
-	HashData [][]byte `json:"hashdata"`
-}
-
 func NewContent() *ContentIn {
 	return &ContentIn{}
 }
